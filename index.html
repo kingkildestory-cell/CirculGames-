@@ -580,3 +580,226 @@
   renderTab();
 })();
 </script>
+<script>
+(function(){
+  // Удаляем любые лишние блоки-дубликаты, застрявшие вне #main-scroll
+  Array.from(document.body.children).forEach(el => {
+    if (!['top-hud','online-bar','main-scroll','bottom-nav','game-overlay'].includes(el.id) && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
+      el.remove();
+    }
+  });
+
+  const sc = document.getElementById('main-scroll');
+  let st = JSON.parse(localStorage.getItem('circul_blue_v1') || 'null') || { bal: 1500, games: 0, wins: 0, inv: '' };
+  let stake = 50, mpMode = 'solo', curP = 1, p1S = 0, p2S = 0, roomCode = '', curTab = 'games';
+
+  function saveSt() {
+    localStorage.setItem('circul_blue_v1', JSON.stringify(st));
+    document.getElementById('bal').innerText = Math.floor(st.bal);
+    document.getElementById('ov-bal').innerText = Math.floor(st.bal);
+    document.getElementById('u-rank').innerText = st.bal >= 5000 ? '● ARCHITECT' : (st.bal >= 2500 ? '● ENGINEER' : '● BLUE MASTER');
+  }
+  saveSt();
+
+  // Живой счетчик онлайна и мультиплеер
+  let baseOnline = 14 + Math.floor(Math.random() * 9);
+  setInterval(() => {
+    baseOnline = Math.max(8, baseOnline + (Math.random() < 0.5 ? 1 : -1));
+    const el = document.getElementById('on-cnt');
+    if (el) el.innerText = baseOnline;
+  }, 4500);
+
+  function updMp() {
+    const el = document.getElementById('mp-lbl');
+    if (mpMode === 'solo') el.innerText = 'Соло';
+    else if (mpMode === '1v1') el.innerText = '1v1 ('+p1S+':'+p2S+') Ход И'+curP;
+    else el.innerText = 'Комната '+roomCode+' ('+p1S+' 💎)';
+  }
+  document.getElementById('btn-1v1').onclick = () => { mpMode = mpMode==='1v1'?'solo':'1v1'; curP=1; p1S=0; p2S=0; updMp(); };
+  document.getElementById('btn-room').onclick = () => {
+    const c = prompt('Код комнаты для дуэли:', roomCode); if (c === null) return;
+    roomCode = c.trim().toUpperCase() || Math.random().toString(36).substring(2,6).toUpperCase();
+    mpMode = 'room'; p1S = 0; p2S = 0; updMp(); alert('Комната ' + roomCode + ' создана! Отправь код другу.');
+  };
+
+  document.querySelectorAll('.nav-it').forEach(b => {
+    b.onclick = function() {
+      document.querySelectorAll('.nav-it').forEach(x => x.classList.remove('act'));
+      this.classList.add('act'); curTab = this.dataset.tab; renderTab();
+    };
+  });
+
+  function renderTab() {
+    sc.scrollTop = 0;
+    if (curTab === 'games') {
+      sc.innerHTML = `<div class="hero-pvp" onclick="launchGame('pvp')"><div><h2>PvP Дуэль Циркуля</h2><p>Останови иглу ближе к цели, чем соперник</p><button type="button" class="cyan-btn">В бой</button></div><div style="font-size:52px">🧭</div></div>
+      <div class="cards-grid">
+        <div class="g-card" onclick="launchGame('crash')"><span class="g-badge">x50</span><div class="g-ico">🚀</div><div><div class="g-t">Взлет Грифеля</div><div class="g-d">Дуга вверх до поломки стержня</div></div></div>
+        <div class="g-card" onclick="launchGame('orbit')"><span class="g-badge">360°</span><div class="g-ico">🪐</div><div><div class="g-t">Орбита Иглы</div><div class="g-d">Попади ножкой в бирюзовый сектор</div></div></div>
+        <div class="g-card" onclick="launchGame('radius')"><span class="g-badge">PRO</span><div class="g-ico">⭕</div><div><div class="g-t">Точный Радиус</div><div class="g-d">Расширь круг строго по контуру</div></div></div>
+        <div class="g-card" onclick="launchGame('mines')"><span class="g-badge">4x4</span><div class="g-ico">💧</div><div><div class="g-t">Сетка Чернил</div><div class="g-d">Собирай 💎, обходи кляксы</div></div></div>
+        <div class="g-card" onclick="launchGame('calib')"><span class="g-badge">x2.2</span><div class="g-ico">📐</div><div><div class="g-t">Калибровка</div><div class="g-d">Шанс прокачки инструмента</div></div></div>
+        <div class="g-card" onclick="launchGame('drum')"><span class="g-badge">3x3</span><div class="g-ico">⚙️</div><div><div class="g-t">Шестерни Удачи</div><div class="g-d">Три символа в ряд — x5</div></div></div>
+        <div class="g-card" onclick="launchGame('radar')"><span class="g-badge">NEW</span><div class="g-ico">📡</div><div><div class="g-t">Сонар Дуги</div><div class="g-d">Поймай бегущий луч в центре</div></div></div>
+        <div class="g-card" onclick="launchGame('case')"><span class="g-badge">GIFT</span><div class="g-ico">🧰</div><div><div class="g-t">Футляр Мастера</div><div class="g-d">Шанс выбить Мишку или Кольцо</div></div></div>
+      </div>`;
+    } else if (curTab === 'shop') {
+      const gifts = '🧸|Мишка|300,❤️|Сердце|500,💍|Кольцо|1200,🎁|Подарок|800,🎂|Тортик|1000'.split(',');
+      sc.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:17px">Магазин подарков</b><span style="font-size:11px;color:#38bdf8">Telegram Gifts</span></div><div class="cards-grid">` + gifts.map(r => {
+        const p = r.split('|'), cnt = st.inv ? st.inv.split(',').filter(x => x.includes(p.at(1))).length : 0;
+        return `<div class="g-card" style="text-align:center;align-items:center">${cnt?'<span class="g-badge">x'+cnt+'</span>':''}<div class="g-ico" style="font-size:46px">${p.at(0)}</div><div class="g-t">${p.at(1)}</div><button type="button" class="cyan-btn" style="width:100%;margin-top:8px" onclick="buyGift('${p.at(0)}','${p.at(1)}',${p.at(2)})">💎 ${p.at(2)}</button></div>`;
+      }).join('') + `</div>`;
+    } else if (curTab === 'prof') {
+      const wr = st.games ? Math.round((st.wins / st.games) * 100) : 0;
+      const invList = st.inv ? st.inv.split(',').filter(Boolean).join(' · ') : 'Пока пусто — загляни в Магазин подарков!';
+      sc.innerHTML = `<div class="stat-row"><div class="st-item"><b>${st.games}</b><span>ИГР</span></div><div class="st-item"><b>${st.wins}</b><span>ПОБЕД</span></div><div class="st-item"><b>${wr}%</b><span>ТОЧНОСТЬ</span></div><div class="st-item"><b>${st.inv?st.inv.split(',').filter(Boolean).length:0}</b><span>ПОДАРКОВ</span></div></div>
+      <div class="blue-pass"><div style="font-size:12px;opacity:.85">Circul Blue Pass · Архитектор</div><div style="font-size:30px;font-weight:900;margin:8px 0">💎 ${Math.floor(st.bal)}</div><button type="button" class="cyan-btn" onclick="st.bal+=300;saveSt();renderTab()">🎁 Бонус +300 💎</button></div>
+      <div class="sec-box"><b style="color:#7dd3fc">Коллекция подарков:</b><div style="margin-top:6px;font-size:13px;color:#bae6fd">${invList}</div></div>`;
+    } else if (curTab === 'clans') {
+      sc.innerHTML = `<div class="sec-box" style="text-align:center"><div style="font-size:38px">🛡️</div><h3>Кланы Архитекторов</h3><p style="font-size:12px;color:#93c5fd;margin-top:4px">Фонд недели: 25 000 💎</p></div>
+      <div class="sec-box"><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(56,189,248,.2)"><b>🥇 Blue Compass</b><span style="color:#38bdf8;font-weight:900">6 420 💎</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0"><b>🥈 Geo Masters</b><span style="color:#93c5fd;font-weight:800">3 180 💎</span></div></div>`;
+    } else if (curTab === 'tour') {
+      sc.innerHTML = `<div class="sec-box" style="text-align:center"><div style="font-size:38px">🏆</div><h3>Турнир Точности</h3></div>
+      <div class="sec-box"><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(56,189,248,.2)"><b>#1 @giftttyt</b><span style="color:#38bdf8;font-weight:900">8 910 💎</span></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0"><b>#2 Вы (${document.getElementById('u-name').innerText})</b><span style="color:#00f5d4;font-weight:900">${Math.floor(st.bal)} 💎</span></div></div>`;
+    } else {
+      sc.innerHTML = `<div class="sec-box" style="text-align:center"><div style="font-size:48px">🎯</div><h3>Охота за Подарками</h3><p style="font-size:12px;color:#93c5fd;margin:8px 0 14px">Открой Футляр Мастера — шанс выбить Мишку 🧸 или Кольцо 💍!</p><button type="button" class="cyan-btn" style="width:100%;padding:14px" onclick="launchGame('case')">Открыть Футляр</button></div>`;
+    }
+  }
+  window.buyGift = (i, n, c) => { if (st.bal < c) return alert('Недостаточно 💎!'); st.bal -= c; st.inv += (st.inv?',':'')+i+' '+n; saveSt(); renderTab(); alert('Подарок '+i+' '+n+' куплен!'); };
+  const ov = document.getElementById('game-overlay'), ovBody = document.getElementById('ov-body'), ovBtn = document.getElementById('ov-btn'), stkRow = document.getElementById('stake-row');
+  let curMode = '', gState = 'idle', raf, val = 1, lim = 2, mines = new Array(), opened = 0, sparks = new Array();
+
+  document.getElementById('ov-back').onclick = () => { cancelAnimationFrame(raf); gState = 'idle'; ov.style.display = 'none'; renderTab(); };
+  function renderStakes() { stkRow.innerHTML = '25,50,100,250'.split(',').map(s => `<button type="button" class="stk-btn ${Number(s)===stake?'act':''}" onclick="setStake(${s})">💎 ${s}</button>`).join(''); }
+  window.setStake = (s) => { if (gState === 'idle') { stake = s; renderStakes(); ovBtn.innerText = 'ЗАПУСТИТЬ (💎 ' + stake + ')'; } };
+
+  function finishRound(delta, win, msg) {
+    gState = 'idle'; st.games++; if (win) st.wins++;
+    if (mpMode === '1v1') { if (curP === 1) { if (delta > 0) p1S += delta; curP = 2; } else { if (delta > 0) p2S += delta; curP = 1; } updMp(); }
+    else { st.bal = Math.max(0, st.bal + delta); if (delta > 0) p1S += delta; if (st.bal < 10) st.bal = 100; updMp(); }
+    saveSt(); ovBtn.className = 'act-btn ' + (win ? 'win' : ''); ovBtn.innerText = msg + ' · ЕЩЁ РАЗ';
+  }
+
+  function addSparks(x, y, col) {
+    for (let i = 0; i < 16; i++) {
+      const a = Math.random() * Math.PI * 2, v = 1.5 + Math.random() * 4;
+      sparks.push({ x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v, life: 1, col });
+    }
+  }
+
+  function drawDetailedCompass(ctx, px, py, tx, ty) {
+    const hx = (px + tx) / 2 - 14, hy = (py + ty) / 2 - 64;
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(hx, hy, 22, 0.4, Math.PI - 0.4); ctx.stroke();
+    ctx.strokeStyle = '#e0f2fe'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(px, py); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(tx, ty); ctx.stroke();
+    ctx.fillStyle = '#0284c7'; ctx.fillRect(hx - 4, hy - 22, 8, 16);
+    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#00f5d4'; ctx.beginPath(); ctx.arc(tx, ty, 6, 0, Math.PI * 2); ctx.fill();
+  }
+
+  window.launchGame = (mode) => {
+    curMode = mode; gState = 'idle'; cancelAnimationFrame(raf); sparks = new Array();
+    ov.style.display = 'flex'; renderStakes(); ovBtn.className = 'act-btn'; ovBtn.innerText = 'ЗАПУСТИТЬ (💎 ' + stake + ')';
+    const names = { pvp:'PvP Дуэль Циркуля', crash:'Взлет Грифеля', orbit:'Орбита Иглы', radius:'Точный Радиус', mines:'Сетка Чернил', calib:'Калибровка', drum:'Шестерни Удачи', radar:'Сонар Дуги', case:'Футляр Мастера' };
+    document.getElementById('ov-title').innerText = names[mode] || 'Мастерская';
+    if (mode === 'crash' || mode === 'orbit' || mode === 'pvp' || mode === 'radius' || mode === 'radar') {
+      ovBody.innerHTML = `<canvas id="g-cvs" width="320" height="260" style="background:#06112b;background-image:linear-gradient(to right,rgba(56,189,248,.14) 1px,transparent 1px),linear-gradient(to bottom,rgba(56,189,248,.14) 1px,transparent 1px);background-size:20px 20px;border-radius:18px;border:1.5px solid #38bdf8;box-shadow:0 0 24px rgba(37,99,235,.3)"></canvas><div id="g-info" style="margin-top:12px;font-size:13px;font-weight:800;color:#93c5fd">Нажми кнопку внизу для запуска циркуля</div>`;
+      const c = document.getElementById('g-cvs'), ctx = c.getContext('2d');
+      ctx.strokeStyle = 'rgba(56,189,248,.25)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(160, 140, 82, 0, Math.PI*2); ctx.stroke();
+      drawDetailedCompass(ctx, 160, 140, 242, 140);
+    } else if (mode === 'mines') {
+      ovBody.innerHTML = `<div class="mine-grid" id="m-grid"></div><div id="g-info" style="margin-top:12px;font-size:13px;font-weight:800;color:#38bdf8">Открывай клетки чертежа, обходи кляксы!</div>`;
+      const mg = document.getElementById('m-grid'); for (let i=0;i<16;i++) mg.innerHTML += `<button type="button" class="m-cell" onclick="clickMine(${i},this)">📐</button>`;
+    } else if (mode === 'drum') {
+      ovBody.innerHTML = `<div style="display:flex;gap:14px;font-size:46px;background:#091738;padding:24px;border-radius:20px;border:2px solid #38bdf8"><span id="sl1">🧭</span><span id="sl2">📐</span><span id="sl3">⚙️</span></div><div id="g-info" style="margin-top:12px;font-size:13px;font-weight:800;color:#93c5fd">Собери 2 или 3 символа в ряд!</div>`;
+    } else if (mode === 'calib') {
+      ovBody.innerHTML = `<div id="cal-ico" style="font-size:76px;transition:transform .4s">🧭</div><div id="g-info" style="margin-top:14px;font-size:14px;font-weight:800;color:#38bdf8">Шанс калибровки: 45% → Награда x2.2</div>`;
+    } else {
+      ovBody.innerHTML = `<div id="box-ico" style="font-size:82px;transition:transform .35s">🧰</div><div id="g-info" style="margin-top:14px;font-size:14px;font-weight:800;color:#e0f2fe">Шанс выбить 💎 и редкие подарки!</div>`;
+    }
+  };
+  window.clickMine = (idx, el) => {
+    if (gState !== 'run' || el.innerText !== '📐') return;
+    if (mines.includes(idx)) { el.style.background = '#e11d48'; el.innerText = '💧'; document.getElementById('g-info').innerText = 'Клякса испортила чертеж!'; finishRound(0, false, 'КЛЯКСА'); }
+    else { el.style.background = '#0284c7'; el.innerText = '💎'; opened++; val = +(1 + opened * 0.35).toFixed(2); ovBtn.className = 'act-btn win'; ovBtn.innerText = 'ЗАБРАТЬ 💎 ' + Math.round(stake * val); document.getElementById('g-info').innerText = 'Множитель чертежа: x' + val; }
+  };
+
+  ovBtn.onclick = () => {
+    if (gState === 'idle') {
+      if (mpMode !== '1v1' && st.bal < stake) return alert('Не хватает 💎 очков!');
+      if (mpMode !== '1v1') { st.bal -= stake; saveSt(); }
+      gState = 'run'; sparks = new Array();
+      if (curMode === 'crash') { val = 1.0; lim = +(1.25 + Math.random()*3.6).toFixed(2); ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ЗАФИКСИРОВАТЬ (x1.00)'; loopC(); }
+      else if (curMode === 'orbit' || curMode === 'pvp') { val = 0; lim = Math.floor(35 + Math.random()*285); ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ОСТАНОВИТЬ ИГЛУ!'; loopC(); }
+      else if (curMode === 'radius') { val = 18; lim = Math.floor(55 + Math.random()*50); ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ЗАФИКСИРОВАТЬ РАДИУС!'; loopC(); }
+      else if (curMode === 'radar') { val = 0.1; lim = 1; ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ПОЙМАТЬ В ЦЕНТРЕ!'; loopC(); }
+      else if (curMode === 'mines') { launchGame('mines'); gState = 'run'; opened = 0; val = 1; mines = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'.split(',').map(Number).sort(()=>Math.random()-0.5).slice(0,3); ovBtn.className = 'act-btn win'; ovBtn.innerText = 'ОТКРЫВАЙ КЛЕТКИ'; }
+      else if (curMode === 'drum') {
+        const ic = '🧭,📐,⚙️,💎,🧸'.split(','), a = ic.at(Math.floor(Math.random()*5)), b = ic.at(Math.floor(Math.random()*5)), c = ic.at(Math.floor(Math.random()*5));
+        document.getElementById('sl1').innerText = a; document.getElementById('sl2').innerText = b; document.getElementById('sl3').innerText = c;
+        if (a===b && b===c) { document.getElementById('g-info').innerText = 'ДЖЕКПОТ 3 в ряд!'; finishRound(stake*5, true, 'ДЖЕКПОТ +'+(stake*5)); }
+        else if (a===b || b===c || a===c) { document.getElementById('g-info').innerText = 'Совпала пара!'; finishRound(Math.round(stake*1.7), true, 'ПАРА +' + Math.round(stake*1.7)); }
+        else { document.getElementById('g-info').innerText = 'Не совпало!'; finishRound(0, false, 'МИМО'); }
+      } else if (curMode === 'calib') {
+        const el = document.getElementById('cal-ico'); el.style.transform = 'rotate(360deg) scale(1.25)';
+        setTimeout(() => { el.style.transform = 'none'; if (Math.random() < 0.45) { document.getElementById('g-info').innerText = 'Калибровка успешна!'; finishRound(Math.round(stake*2.2), true, 'УСПЕХ +' + Math.round(stake*2.2)); } else { document.getElementById('g-info').innerText = 'Сбой угла!'; finishRound(0, false, 'СБОЙ'); } }, 350);
+      } else {
+        const b = document.getElementById('box-ico'); b.style.transform = 'scale(1.25) rotate(12deg)';
+        setTimeout(() => {
+          b.style.transform = 'none';
+          if (Math.random() < 0.28) { const g = '🧸 Мишка,❤️ Сердце,🎁 Подарок,🎂 Тортик'.split(',').at(Math.floor(Math.random()*4)); st.inv += (st.inv?',':'')+g; document.getElementById('g-info').innerText = 'Выпал подарок: '+g; finishRound(stake, true, g); }
+          else { const m = '0,0.5,1.5,2,3'.split(',').map(Number).at(Math.floor(Math.random()*5)); document.getElementById('g-info').innerText = 'Множитель x'+m; finishRound(Math.round(stake*m), m >= 1, 'СЕКТОР x' + m); }
+        }, 320);
+      }
+    } else if (gState === 'run') {
+      cancelAnimationFrame(raf);
+      if (curMode === 'crash') { addSparks(160, 130, '#00f5d4'); finishRound(Math.round(stake*val), true, 'УСПЕЛ +' + Math.round(stake*val)); }
+      else if (curMode === 'mines' && opened > 0) finishRound(Math.round(stake*val), true, 'ЗАБРАНО +' + Math.round(stake*val));
+      else if (curMode === 'radius') finishRound(Math.abs(val-lim)<=13 ? Math.round(stake*2.4) : 0, Math.abs(val-lim)<=13, Math.abs(val-lim)<=13 ? 'ИДЕАЛЬНО!' : 'МИМО');
+      else if (curMode === 'radar') finishRound(Math.abs(val-0.5)<=0.1 ? Math.round(stake*2.3) : 0, Math.abs(val-0.5)<=0.1, Math.abs(val-0.5)<=0.1 ? 'В ЦЕНТРЕ!' : 'МИМО');
+      else {
+        const deg = Math.round(((val*180/Math.PI)%360+360)%360), diff = Math.min(Math.abs(deg-lim), 360-Math.abs(deg-lim));
+        finishRound(diff<=28 ? Math.round(stake*2.5) : 0, diff<=28, diff<=28 ? 'ТОЧНО ('+deg+'°)!' : 'МИМО ('+deg+'°/'+lim+'°)');
+      }
+    }
+  };
+
+  function loopC() {
+    const c = document.getElementById('g-cvs'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height; ctx.clearRect(0,0,W,H);
+    if (curMode === 'crash') {
+      val += 0.017 + val * 0.004; ovBtn.innerText = 'ЗАФИКСИРОВАТЬ (💎 ' + Math.round(stake*val) + ')';
+      const p = Math.min(1, (val-1)/4), tx = 25 + p*(W-55), ty = H - 28 - p*(H-68);
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(25, H-28); ctx.quadraticCurveTo(W*0.5, H-28, tx, ty); ctx.stroke();
+      drawDetailedCompass(ctx, tx - 22, ty + 26, tx, ty);
+      ctx.fillStyle = '#fff'; ctx.font = '900 38px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('x' + val.toFixed(2), W/2, 48);
+      if (val >= lim) { addSparks(tx, ty, '#f43f5e'); document.getElementById('g-info').innerText = 'Стержень сломался на x'+lim; finishRound(0, false, 'ПОЛОМКА'); return; }
+    } else if (curMode === 'radius') {
+      val += 2.1; if (val > 115) val = 18;
+      ctx.strokeStyle = 'rgba(0,245,212,.35)'; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(W/2,H/2+10,lim,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(W/2,H/2+10,val,0,Math.PI*2); ctx.stroke();
+      drawDetailedCompass(ctx, W/2, H/2+10, W/2+val, H/2+10);
+    } else if (curMode === 'radar') {
+      val += 0.024 * lim; if (val > 1 || val < 0) lim *= -1;
+      ctx.fillStyle = '#172e5c'; ctx.fillRect(25, H/2-12, W-50, 24);
+      ctx.fillStyle = '#00f5d4'; ctx.fillRect(W/2-22, H/2-16, 44, 32);
+      const rx = 25 + val*(W-50);
+      drawDetailedCompass(ctx, rx - 18, H/2 + 28, rx, H/2);
+    } else {
+      val += 0.08; const r = 82, cx = W/2, cy = H/2+12, tRad = lim*Math.PI/180;
+      ctx.strokeStyle = '#172e5c'; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = '#00f5d4'; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(cx,cy,r,tRad-0.35,tRad+0.35); ctx.stroke();
+      drawDetailedCompass(ctx, cx, cy, cx+Math.cos(val)*r, cy+Math.sin(val)*r);
+      ctx.fillStyle = '#7dd3fc'; ctx.font = '800 14px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Цель: ' + lim + '°', cx, 24);
+    }
+    if (gState === 'run') raf = requestAnimationFrame(loopC);
+  }
+
+  renderTab();
+})();
+</script>
