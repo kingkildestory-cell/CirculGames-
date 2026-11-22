@@ -3,113 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Circul Pro — Инженерная Мастерская</title>
+<title>Circul Gift — Инженерная Мастерская</title>
 <script src="https://telegram.org"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
   body{
-    background:#040914;
-    background-image:
-      radial-gradient(circle at 50% -10%,rgba(37,99,235,.35) 0%,transparent 65%),
-      linear-gradient(rgba(56,189,248,.06) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(56,189,248,.06) 1px,transparent 1px);
-    background-size:100% 100%,24px 24px,24px 24px;
+    background:#0d1017;
+    background-image:radial-gradient(circle at 50% 0%,rgba(37,99,235,.22) 0%,transparent 65%),linear-gradient(rgba(56,189,248,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.04) 1px,transparent 1px);
+    background-size:100% 100%,22px 22px,22px 22px;
     color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
     height:100vh;display:flex;flex-direction:column;overflow:hidden;
   }
-  #hud{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(8,17,38,.94);border-bottom:1px solid rgba(56,189,248,.25);backdrop-filter:blur(10px);z-index:10}
-  .u-box{display:flex;align-items:center;gap:10px}
-  #mascot{width:40px;height:40px;border-radius:50%;background:#1e3a8a;border:2px solid #38bdf8;image-rendering:pixelated;box-shadow:0 0 12px rgba(56,189,248,.4)}
-  .bal{background:linear-gradient(135deg,#1d4ed8,#0284c7);padding:7px 14px;border-radius:18px;font-weight:900;font-size:14px;border:1px solid #7dd3fc;box-shadow:0 0 16px rgba(56,189,248,.35);display:flex;align-items:center;gap:5px}
-  #bar{display:flex;justify-content:space-between;align-items:center;padding:7px 14px;background:rgba(4,9,20,.85);font-size:11px;color:#7dd3fc;border-bottom:1px solid rgba(56,189,248,.12)}
-  .dot{width:7px;height:7px;background:#00f5d4;border-radius:50%;display:inline-block;margin-right:5px;box-shadow:0 0 8px #00f5d4;animation:pulse 1.5s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-  #view{flex:1;overflow-y:auto;padding:14px 14px 92px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
-  .hero{background:linear-gradient(135deg,#1d4ed8 0%,#0f2964 60%,#071330 100%);border:1.5px solid #38bdf8;border-radius:20px;padding:18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 28px rgba(37,99,235,.4),inset 0 0 20px rgba(56,189,248,.2)}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-  .card{background:linear-gradient(165deg,#0e2047 0%,#071128 100%);border:1.5px solid rgba(56,189,248,.3);border-radius:18px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;min-height:132px;position:relative;transition:transform .15s,border-color .15s}
-  .card:active{transform:scale(.96);border-color:#00f5d4;box-shadow:0 0 18px rgba(0,245,212,.3)}
-  .tag{position:absolute;top:10px;right:10px;background:rgba(0,245,212,.15);border:1px solid #00f5d4;font-size:9px;padding:2px 7px;border-radius:7px;color:#00f5d4;font-weight:900}
-  .btn-p{background:linear-gradient(90deg,#0284c7,#38bdf8);color:#040914;border:none;border-radius:12px;padding:9px 18px;font-weight:900;font-size:13px;box-shadow:0 4px 12px rgba(56,189,248,.4)}
-  #nav{position:fixed;bottom:0;left:0;right:0;background:rgba(6,13,29,.98);border-top:1px solid rgba(56,189,248,.25);display:flex;justify-content:space-around;padding:9px 0 16px;z-index:20}
-  .n-it{background:none;border:none;color:#60a5fa;font-size:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.6}
-  .n-it.act{opacity:1;color:#00f5d4;text-shadow:0 0 10px rgba(0,245,212,.5)} .n-it i{font-style:normal;font-size:20px}
-  #modal{position:fixed;inset:0;background:#040914;z-index:50;display:none;flex-direction:column}
-  .m-top{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;background:#081126;border-bottom:1px solid #1e3a8a}
-  .m-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;overflow-y:auto}
-  .m-foot{padding:12px 14px 18px;background:#081126;border-top:1px solid #1e3a8a;display:flex;flex-direction:column;gap:9px}
-  .ctrl-panel{display:flex;flex-direction:column;gap:8px;background:#0c1936;padding:10px;border-radius:14px;border:1px solid rgba(56,189,248,.25)}
-  .row-flex{display:flex;align-items:center;justify-content:space-between;gap:6px}
-  .inp-box{background:#040914;border:1px solid #2563eb;color:#fff;padding:7px 10px;border-radius:9px;font-weight:900;font-size:13px;width:90px;text-align:center}
-  .s-b{background:#132752;border:1px solid #38bdf8;color:#bae6fd;padding:6px 10px;border-radius:9px;font-size:11px;font-weight:800}
-  .s-b.act{background:#38bdf8;color:#040914;border-color:#fff}
-  .go-b{width:100%;padding:15px;border-radius:14px;border:none;font-weight:900;font-size:16px;background:linear-gradient(90deg,#1d4ed8,#38bdf8);color:#fff;box-shadow:0 5px 18px rgba(37,99,235,.45)}
-  .go-b.stop{background:linear-gradient(90deg,#e11d48,#fb7185);box-shadow:0 5px 18px rgba(225,29,72,.45)}
-  .go-b.win{background:linear-gradient(90deg,#059669,#10b981);box-shadow:0 5px 18px rgba(16,185,129,.45)}
-  .m-grid{display:grid;grid-template-columns:repeat(4,64px);gap:8px}
-  .m-c{height:64px;background:linear-gradient(145deg,#122652,#0a1633);border:1.5px solid #38bdf8;border-radius:12px;font-size:22px;color:#fff;transition:.2s}
-  .m-c:active{transform:scale(.92)}
+  #hud{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#131722;border-bottom:1px solid #1e2536;z-index:20}
+  .u-pill{display:flex;align-items:center;gap:8px}
+  #mascot{width:38px;height:38px;border-radius:50%;background:#1e3a8a;border:2px solid #38bdf8;image-rendering:pixelated}
+  .bal-box{display:flex;align-items:center;gap:8px;background:#1b2030;padding:6px 12px;border-radius:14px;border:1px solid #2a334a;font-weight:900;font-size:14px}
+  .plus-b{background:#3b82f6;color:#fff;border:none;border-radius:8px;width:22px;height:22px;font-weight:900;font-size:15px}
+  #live-strip{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#11151f;border-bottom:1px solid #1e2536;overflow-x:auto}
+  .live-tag{font-size:11px;font-weight:900;color:#10b981;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .live-dot{width:7px;height:7px;background:#10b981;border-radius:50%;box-shadow:0 0 8px #10b981}
+  .live-item{min-width:44px;height:44px;border-radius:12px;background:linear-gradient(145deg,#1d263b,#131929);border:1px solid #2e3b59;display:flex;align-items:center;justify-content:center;font-size:22px}
+  #view{flex:1;overflow-y:auto;padding:12px 12px 86px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+  .banner-rocket{background:linear-gradient(135deg,#0284c7 0%,#1d4ed8 60%,#1e1b4b 100%);border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;border:1px solid #38bdf8}
+  .banner-pvp{background:linear-gradient(135deg,#f59e0b 0%,#d97706 55%,#78350f 100%);border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;border:1px solid #fcd34d}
+  .banner-hub{background:linear-gradient(135deg,#6d28d9 0%,#3b82f6 60%,#0f172a 100%);border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;border:1px solid #818cf8}
+  .hot-pill{display:inline-block;background:rgba(0,0,0,.35);padding:3px 8px;border-radius:8px;font-size:10px;font-weight:900;margin-bottom:6px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .card-g{border-radius:18px;padding:14px;min-height:135px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.15)}
+  .card-g:active{transform:scale(.96)}
+  .c-green{background:linear-gradient(155deg,#10b981,#047857)}
+  .c-blue{background:linear-gradient(155deg,#0ea5e9,#1d4ed8)}
+  .c-pink{background:linear-gradient(155deg,#d946ef,#86198f)}
+  .c-purple{background:linear-gradient(155deg,#8b5cf6,#4c1d95)}
+  .c-dark{background:linear-gradient(155deg,#1e293b,#0f172a);border-color:#334155}
+  .c-orange{background:linear-gradient(155deg,#f97316,#b91c1c)}
+  #nav{position:fixed;bottom:0;left:0;right:0;background:#131722;border-top:1px solid #1e2536;display:flex;justify-content:space-around;padding:8px 0 14px;z-index:30}
+  .n-btn{background:none;border:none;color:#64748b;font-size:10px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .n-btn.act{color:#38bdf8} .n-btn i{font-style:normal;font-size:19px}
+  #modal{position:fixed;inset:0;background:#0d1017;z-index:50;display:none;flex-direction:column}
+  .m-top{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;background:#131722;border-bottom:1px solid #1e2536}
+  .m-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .hist-row{display:flex;gap:6px;width:100%;overflow-x:auto;padding-bottom:4px}
+  .h-pill{padding:4px 10px;border-radius:10px;font-size:11px;font-weight:900;background:#1b2030;border:1px solid #3b82f6;color:#93c5fd;white-space:nowrap}
+  .h-pill.low{border-color:#ef4444;color:#fca5a5}
+  .bet-btn{width:100%;padding:15px;border-radius:14px;border:none;font-size:16px;font-weight:900;color:#fff;background:linear-gradient(90deg,#2563eb,#38bdf8)}
+  .bet-btn.stop{background:linear-gradient(90deg,#e11d48,#f43f5e)}
+  .bet-btn.win{background:linear-gradient(90deg,#059669,#10b981)}
+  .panel{width:100%;background:#161b28;border:1px solid #263046;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+  .chip{background:#1f273b;border:1px solid #334155;color:#cbd5e1;padding:7px 10px;border-radius:10px;font-size:12px;font-weight:800}
+  .chip.act{background:#3b82f6;color:#fff;border-color:#93c5fd}
+  .grid5{display:grid;grid-template-columns:repeat(5,52px);gap:6px}
+  .cell5{height:52px;background:#1e2536;border:1px solid #334155;border-radius:11px;font-size:20px;color:#fff}
 </style>
 </head>
 <body>
 <div id="hud">
-  <div class="u-box"><canvas id="mascot" width="32" height="32"></canvas><div><b id="uname" style="font-size:14px">Circul</b><div style="font-size:10px;color:#00f5d4;font-weight:800" id="urank">● MASTER ARCHITECT</div></div></div>
-  <div class="bal">💎 <span id="bal">2000</span></div>
+  <div class="u-pill"><canvas id="mascot" width="32" height="32"></canvas><div><div style="font-size:11px;color:#94a3b8">Ваш баланс</div><b id="uname" style="font-size:14px">Circul</b></div></div>
+  <div class="bal-box">💎 <span id="bal">1500</span> <button type="button" class="plus-b" onclick="addFreeBonus()">+</button></div>
 </div>
-<div id="bar">
-  <div><span class="dot"></span>В сети: <b id="on-n" style="color:#fff">24</b></div>
-  <div style="display:flex;gap:6px"><button class="s-b" id="b-mp">👥 1 на 1: Выкл</button></div>
+<div id="live-strip">
+  <div class="live-tag"><span class="live-dot"></span>Live</div>
+  <div class="live-item">🧸</div><div class="live-item">💎</div><div class="live-item">❤️</div><div class="live-item">💍</div><div class="live-item">🎂</div><div class="live-item">🎁</div>
 </div>
 <div id="view"></div>
 <div id="nav">
-  <button class="n-it act" data-t="games"><i>🧭</i>Игры</button>
-  <button class="n-it" data-t="shop"><i>🎁</i>Магазин</button>
-  <button class="n-it" data-t="prof"><i>👤</i>Профиль</button>
-  <button class="n-it" data-t="top"><i>🏆</i>Топ</button>
+  <button type="button" class="n-btn" data-t="bag"><i>🎒</i>Рюкзак</button>
+  <button type="button" class="n-btn" data-t="inv"><i>👥</i>Друзья</button>
+  <button type="button" class="n-btn act" data-t="home"><i>🏠</i>Главная</button>
+  <button type="button" class="n-btn" data-t="top"><i>🏆</i>Топ</button>
+  <button type="button" class="n-btn" data-t="earn"><i>🎯</i>Бонусы</button>
 </div>
 <div id="modal">
-  <div class="m-top"><button class="s-b" id="m-close">← Назад</button><b id="m-title" style="color:#7dd3fc">ИГРА</b><div class="bal" style="padding:4px 10px;font-size:12px">💎 <span id="m-bal">2000</span></div></div>
+  <div class="m-top"><button type="button" class="chip" id="m-back">← Назад</button><b id="m-title">ИГРА</b><div class="bal-box" style="padding:4px 10px;font-size:12px">💎 <span id="m-bal">1500</span></div></div>
   <div class="m-body" id="m-body"></div>
-  <div class="m-foot">
-    <div class="ctrl-panel" id="c-panel"></div>
-    <button class="go-b" id="go-btn">ЗАПУСТИТЬ</button>
-  </div>
 </div>
 <script>
-  if (window.Telegram && window.Telegram.WebApp) {
-    window.Telegram.WebApp.expand();
-    const u = window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
+  const tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) {
+    tg.expand();
+    const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
     if (u && u.first_name) document.getElementById('uname').innerText = u.first_name;
   }
 
-  // Звуковой синтезатор (без внешних файлов)
-  const actx = new (window.AudioContext || window.webkitAudioContext)();
-  function beep(freq, dur, type='sine') {
-    try {
-      if (actx.state === 'suspended') actx.resume();
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; o.frequency.value = freq;
-      g.gain.setValueAtTime(0.08, actx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
-      o.connect(g); g.connect(actx.destination);
-      o.start(); o.stop(actx.currentTime + dur);
-    } catch(e) {}
-  }
-
-  // Пиксельный маскот
+  // Маскот-чертежница
   const mCtx = document.getElementById('mascot').getContext('2d');
-  function drawMascot(mood) {
+  function drawMascot(m) {
     mCtx.clearRect(0,0,32,32);
     mCtx.fillStyle='#1d4ed8'; mCtx.fillRect(6,7,20,17); mCtx.fillRect(4,11,24,11);
     mCtx.fillStyle='#94a3b8'; mCtx.fillRect(19,2,6,2); mCtx.fillRect(18,4,2,4); mCtx.fillRect(24,4,2,4);
     mCtx.fillStyle='#fed7aa'; mCtx.fillRect(9,10,14,12);
     mCtx.fillStyle='#2563eb'; mCtx.fillRect(8,7,16,5); mCtx.fillRect(10,12,3,2); mCtx.fillRect(15,12,2,3); mCtx.fillRect(19,12,3,2);
     mCtx.fillStyle='#0284c7'; mCtx.fillRect(9,23,14,9); mCtx.fillStyle='#38bdf8'; mCtx.fillRect(12,24,8,8);
-    if (mood==='happy') {
+    if (m==='happy') {
       mCtx.fillStyle='#0f172a'; mCtx.fillRect(11,14,3,4); mCtx.fillRect(18,14,3,4);
       mCtx.fillStyle='#38bdf8'; mCtx.fillRect(11,16,3,2); mCtx.fillRect(18,16,3,2);
       mCtx.fillStyle='#f43f5e'; mCtx.fillRect(14,19,4,2);
-    } else if (mood==='sad') {
+    } else if (m==='sad') {
       mCtx.fillStyle='#0f172a'; mCtx.fillRect(10,15,4,1); mCtx.fillRect(18,15,4,1);
       mCtx.fillStyle='#38bdf8'; mCtx.fillRect(9,16,2,4); mCtx.fillRect(21,16,2,4);
       mCtx.fillStyle='#e11d48'; mCtx.fillRect(14,19,4,2);
@@ -120,275 +109,514 @@
   }
   drawMascot('happy');
 
-  let st = JSON.parse(localStorage.getItem('circul_pro_v1') || 'null') || { bal: 2000, games: 0, wins: 0, inv: '' };
-  let mpOn = false, turn = 1, s1 = 0, s2 = 0, curTab = 'games';
-  const view = document.getElementById('view');
-
+  // Сохранение баланса, подарков и рефералов
+  let st = JSON.parse(localStorage.getItem('circul_epic_v1') || 'null') || {
+    bal: 1500, inv: '🧸|Мишка|300,❤️|Сердце|500', refs: 0, refEarned: 0, refBy: ''
+  };
   function saveSt() {
-    localStorage.setItem('circul_pro_v1', JSON.stringify(st));
+    localStorage.setItem('circul_epic_v1', JSON.stringify(st));
     document.getElementById('bal').innerText = Math.floor(st.bal);
     document.getElementById('m-bal').innerText = Math.floor(st.bal);
-    document.getElementById('urank').innerText = st.bal >= 10000 ? '● GRAND ARCHITECT' : (st.bal >= 4000 ? '● SENIOR ENGINEER' : '● MASTER ARCHITECT');
   }
   saveSt();
 
-  setInterval(() => {
-    const el = document.getElementById('on-n');
-    if (el) el.innerText = Math.max(12, Number(el.innerText) + (Math.random() < 0.5 ? 1 : -1));
-  }, 4000);
+  // Реферальная система по Telegram ID и параметру start_param
+  const uid = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id)
+    ? String(tg.initDataUnsafe.user.id)
+    : (localStorage.getItem('c_ref_uid') || (localStorage.setItem('c_ref_uid', Math.floor(100000+Math.random()*900000)), localStorage.getItem('c_ref_uid')));
+  const refLink = 'https://t.me_' + uid;
 
-  const bMp = document.getElementById('b-mp');
-  bMp.onclick = () => {
-    mpOn = !mpOn; turn = 1; s1 = 0; s2 = 0;
-    bMp.className = mpOn ? 's-b act' : 's-b';
-    bMp.innerText = mpOn ? '👥 1 на 1: И1 [0:0]' : '👥 1 на 1: Выкл';
-    beep(520, 0.08);
+  (function checkReferral() {
+    const param = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || new URLSearchParams(location.search).get('start') || '';
+    if (param && param.startsWith('ref_') && !st.refBy && param !== 'ref_' + uid) {
+      st.refBy = param;
+      st.bal += 500;
+      saveSt();
+      setTimeout(() => alert('Вы зашли по приглашению друга! Начислен стартовый бонус +500 💎'), 400);
+    }
+  })();
+
+  window.inviteFriend = () => {
+    const shareUrl = 'https://t.me' + encodeURIComponent(refLink) + '&text=' + encodeURIComponent('Залетай в Мастерскую Циркуля! Лови +500 💎 по моей ссылке:');
+    if (tg && tg.openTelegramLink) tg.openTelegramLink(shareUrl);
+    else window.open(shareUrl, '_blank');
   };
+  window.copyRefLink = () => {
+    if (navigator.clipboard) navigator.clipboard.writeText(refLink);
+    alert('Реферальная ссылка скопирована:\n' + refLink);
+  };
+  window.addFreeBonus = () => { st.bal += 300; saveSt(); drawMascot('happy'); alert('Начислено +300 💎!'); };
 
-  document.querySelectorAll('.n-it').forEach(b => {
+  let curTab = 'home';
+  const view = document.getElementById('view');
+  document.querySelectorAll('.n-btn').forEach(b => {
     b.onclick = function() {
-      document.querySelectorAll('.n-it').forEach(x => x.classList.remove('act'));
-      this.classList.add('act'); curTab = this.dataset.t; beep(440, 0.06); renderTab();
+      document.querySelectorAll('.n-btn').forEach(x => x.classList.remove('act'));
+      this.classList.add('act'); curTab = this.dataset.t; renderTab();
     };
   });
 
   function renderTab() {
     view.scrollTop = 0;
-    if (curTab === 'games') {
+    if (curTab === 'home') {
       view.innerHTML = `
-        <div class="hero" onclick="openGame('pvp')">
-          <div><h2 style="font-size:19px;margin-bottom:4px">PvP Дуэль Градусов</h2><p style="font-size:12px;color:#bae6fd;margin-bottom:10px">Останови иглу циркуля точнее соперника</p><button type="button" class="btn-p">Играть 1v1</button></div>
-          <div style="font-size:50px;filter:drop-shadow(0 0 12px #38bdf8)">🧭</div>
+        <div class="banner-rocket" onclick="openGame('rocket')">
+          <div><div class="hot-pill">🔥 HOT</div><h2 style="font-size:21px;font-weight:900">ROCKET ДУГА</h2><p style="font-size:12px;color:#bae6fd;margin-top:3px">Взлет грифеля циркуля до x50</p></div>
+          <div style="font-size:52px">🚀</div>
         </div>
-        <div class="grid">
-          <div class="card" onclick="openGame('crash')"><span class="tag">AUTO</span><div style="font-size:34px">🚀</div><div><b style="font-size:15px">Взлет Грифеля</b><div style="font-size:11px;color:#93c5fd;margin-top:2px">Авто-забор и дуга до x50</div></div></div>
-          <div class="card" onclick="openGame('mines')"><span class="tag">2-8 МИН</span><div style="font-size:34px">💧</div><div><b style="font-size:15px">Сетка Чернил</b><div style="font-size:11px;color:#93c5fd;margin-top:2px">Выбор числа клякс на поле</div></div></div>
-          <div class="card" onclick="openGame('radius')"><span class="tag">PRO</span><div style="font-size:34px">⭕</div><div><b style="font-size:15px">Точный Радиус</b><div style="font-size:11px;color:#93c5fd;margin-top:2px">Зафиксируй окружность</div></div></div>
-          <div class="card" onclick="openGame('orbit')"><span class="tag">360°</span><div style="font-size:34px">🪐</div><div><b style="font-size:15px">Орбита Иглы</b><div style="font-size:11px;color:#93c5fd;margin-top:2px">Транспортир с сектором x3</div></div></div>
-          <div class="card" onclick="openGame('calib')"><span class="tag">ШАНС %</span><div style="font-size:34px">📐</div><div><b style="font-size:15px">Калибровка</b><div style="font-size:11px;color:#93c5fd;margin-top:2px">Настрой риск от 20% до 75%</div></div></div>
-          <div class="card" onclick="openGame('drum')"><span class="tag">AUTO</span><div style="font-size:34px">⚙️</div><div><b style="font-size:15px">Шестерни Удачи</b><div style="font-size:11px;color:#93c5fd;margin-top:2px">Авто-спин и джекпот x6</div></div></div>
+        <div class="banner-pvp" onclick="openGame('pvp_hub')">
+          <div><div class="hot-pill">⚡ NEW PVP</div><h2 style="font-size:20px;font-weight:900">PVP HUB</h2><p style="font-size:12px;color:#fef3c7;margin-top:3px">Колесо Битвы · Лёд против Пламени</p></div>
+          <div style="font-size:48px">⚔️</div>
+        </div>
+        <div class="banner-hub" onclick="openGame('play_hub')">
+          <div><div class="hot-pill">🎮 6 РЕЖИМОВ</div><h2 style="font-size:20px;font-weight:900">PLAY HUB</h2><p style="font-size:12px;color:#ddd6fe;margin-top:3px">Upgrade · Mines · Spins · Plinko · Dice · Crafts</p></div>
+          <div style="font-size:48px">🧭</div>
+        </div>
+        <div class="grid-2">
+          <div class="card-g c-dark" onclick="openGame('free24')"><span style="font-size:11px;color:#f59e0b;font-weight:900">FREE 24</span><div style="font-size:42px;text-align:center">💍</div><b style="font-size:14px">Сундук Кольца</b></div>
+          <div class="card-g c-purple" onclick="openGame('free')"><span style="font-size:11px;color:#e9d5ff;font-weight:900">FREE BONUS</span><div style="font-size:42px;text-align:center">🎂</div><b style="font-size:14px">Подарок Дня</b></div>
         </div>`;
-    } else if (curTab === 'shop') {
-      const gifts = '🧸|Мишка|300,❤️|Сердце|500,💍|Кольцо|1200,🎁|Подарок|800,🎂|Тортик|1000'.split(',');
-      view.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:17px">Магазин подарков</b><span style="font-size:11px;color:#00f5d4">Telegram Collection</span></div><div class="grid">` +
-        gifts.map(r => {
-          const p = r.split('|'), cnt = st.inv ? st.inv.split(',').filter(x => x.includes(p.at(1))).length : 0;
-          return `<div class="card" style="align-items:center;text-align:center">${cnt?'<span class="tag">x'+cnt+'</span>':''}<div style="font-size:46px;margin:6px 0">${p.at(0)}</div><b>${p.at(1)}</b><button type="button" class="btn-p" style="width:100%;margin-top:8px" onclick="buyGift('${p.at(0)}','${p.at(1)}',${p.at(2)})">💎 ${p.at(2)}</button></div>`;
+    } else if (curTab === 'bag') {
+      const shop = '🧸|Мишка|300,❤️|Сердце|500,💍|Кольцо|1200,🎁|Подарок|800,🎂|Тортик|1000'.split(',');
+      const myItems = st.inv ? st.inv.split(',').filter(Boolean) : new Array();
+      view.innerHTML = `<b style="font-size:16px">Мой рюкзак (${myItems.length})</b>
+        <div class="grid-2">` + (myItems.length ? myItems.map((raw, idx) => {
+          const p = raw.split('|');
+          return `<div class="card-g c-dark" style="min-height:110px;align-items:center;text-align:center"><div style="font-size:36px">${p.at(0)}</div><b>${p.at(1)}</b><span style="font-size:11px;color:#38bdf8">💎 ${p.at(2)}</span></div>`;
+        }).join('') : '<div style="grid-column:span 2;color:#94a3b8;font-size:12px">Рюкзак пуст — купи подарки ниже!</div>') + `</div>
+        <b style="font-size:16px;margin-top:8px">Магазин подарков</b><div class="grid-2">` +
+        shop.map(raw => {
+          const p = raw.split('|');
+          return `<div class="card-g c-blue" style="min-height:125px;align-items:center;text-align:center"><div style="font-size:40px">${p.at(0)}</div><b>${p.at(1)}</b><button type="button" class="chip act" style="width:100%" onclick="buyGift('${p.at(0)}','${p.at(1)}',${p.at(2)})">💎 ${p.at(2)}</button></div>`;
         }).join('') + `</div>`;
-    } else if (curTab === 'prof') {
-      const wr = st.games ? Math.round((st.wins / st.games) * 100) : 0;
-      const list = st.inv ? st.inv.split(',').filter(Boolean).join(' · ') : 'Пока пусто — купи подарки во вкладке Магазин!';
+    } else if (curTab === 'inv') {
       view.innerHTML = `
-        <div style="background:linear-gradient(135deg,#2563eb,#0f172a);border:1.5px solid #60a5fa;border-radius:18px;padding:16px">
-          <div style="font-size:12px;color:#bae6fd">Circul Pro Pass · Инженерный счет</div>
-          <div style="font-size:32px;font-weight:900;margin:8px 0">💎 ${Math.floor(st.bal)}</div>
-          <button type="button" class="btn-p" onclick="st.bal+=400;saveSt();renderTab();beep(660,0.12)">🎁 Забрать бонус +400 💎</button>
+        <div class="panel" style="gap:10px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:46px;height:46px;border-radius:14px;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-size:24px">👥</div>
+            <div><h3 style="font-size:17px">Получай 10% с друзей</h3><p style="font-size:12px;color:#94a3b8">+500 💎 за каждого приглашенного</p></div>
+          </div>
+          <button type="button" class="bet-btn" onclick="inviteFriend()">🔗 Пригласить друзей</button>
+          <button type="button" class="chip" style="width:100%;padding:12px;text-align:center" onclick="copyRefLink()">📋 Копировать ссылку</button>
+          <div style="font-size:10px;color:#64748b;word-break:break-all;text-align:center">${refLink}</div>
         </div>
-        <div class="grid" style="grid-template-columns:repeat(3,1fr);text-align:center">
-          <div class="card" style="min-height:auto;padding:10px"><b style="font-size:18px;color:#38bdf8">${st.games}</b><span style="font-size:10px;color:#93c5fd">ИГР</span></div>
-          <div class="card" style="min-height:auto;padding:10px"><b style="font-size:18px;color:#00f5d4">${st.wins}</b><span style="font-size:10px;color:#93c5fd">ПОБЕД</span></div>
-          <div class="card" style="min-height:auto;padding:10px"><b style="font-size:18px;color:#f59e0b">${wr}%</b><span style="font-size:10px;color:#93c5fd">ВИНРЕЙТ</span></div>
-        </div>
-        <div class="card" style="min-height:auto"><b style="color:#7dd3fc;margin-bottom:6px">Мои подарки:</b><div style="font-size:13px;color:#bae6fd">${list}</div></div>`;
-    } else {
-      view.innerHTML = `<div class="card" style="min-height:auto;text-align:center"><div style="font-size:40px">🏆</div><h3>Лидеры Мастерской</h3></div>
-        <div class="card" style="min-height:auto;gap:10px">
-          <div style="display:flex;justify-content:space-between"><b>🥇 @architect_pro</b><span style="color:#00f5d4;font-weight:900">14 850 💎</span></div>
-          <div style="display:flex;justify-content:space-between"><b>🥈 @circul_king</b><span style="color:#38bdf8;font-weight:900">9 420 💎</span></div>
-          <div style="display:flex;justify-content:space-between"><b>🥉 Вы (${document.getElementById('uname').innerText})</b><span style="color:#f59e0b;font-weight:900">${Math.floor(st.bal)} 💎</span></div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Заработано с рефералов</span><b style="color:#38bdf8">${st.refEarned} 💎</b></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Приглашено друзей</span><b>${st.refs}</b></div>
         </div>`;
+    } else if (curTab === 'top') {
+      view.innerHTML = `<div class="panel"><h3 style="margin-bottom:8px">🏆 Лидеры дня</h3>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #263046"><b>#1 @abcbbl</b><span style="color:#38bdf8;font-weight:900">+30 420 💎</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #263046"><b>#2 @juliboyev</b><span style="color:#94a3b8;font-weight:900">+14 100 💎</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0"><b>#3 Вы (${document.getElementById('uname').innerText})</b><span style="color:#10b981;font-weight:900">${Math.floor(st.bal)} 💎</span></div></div>`;
+    } else {
+      view.innerHTML = `<div class="panel" style="text-align:center"><h3>🎯 Ежедневные задания</h3><p style="font-size:12px;color:#94a3b8">Забирай награды и открывай бесплатные сундуки</p>
+        <button type="button" class="bet-btn win" onclick="addFreeBonus()">Забрать +300 💎</button></div>`;
     }
   }
 
-  window.buyGift = (ico, name, cost) => {
-    if (st.bal < cost) return alert('Недостаточно 💎 очков!');
-    st.bal -= cost; st.inv = st.inv ? (st.inv + ',' + ico + ' ' + name) : (ico + ' ' + name);
-    saveSt(); renderTab(); drawMascot('happy'); beep(740, 0.15);
-    alert('Подарок ' + ico + ' ' + name + ' добавлен в профиль!');
+  window.buyGift = (i, n, c) => {
+    if (st.bal < c) return alert('Не хватает 💎!');
+    st.bal -= c; st.inv = st.inv ? (st.inv + ',' + i+'|'+n+'|'+c) : (i+'|'+n+'|'+c);
+    saveSt(); renderTab(); drawMascot('happy'); alert('Подарок ' + i + ' ' + n + ' добавлен в Рюкзак!');
   };
-  const modal = document.getElementById('modal'), mBody = document.getElementById('m-body');
-  const goBtn = document.getElementById('go-btn'), cPanel = document.getElementById('c-panel');
-  let mode = '', gSt = 'idle', raf, stake = 50, autoPlay = false, autoCash = 2.0, mineCnt = 3, calibPct = 45;
-  let val = 1, lim = 2, mines = new Array(), opened = 0, sparks = new Array();
+  const modal = document.getElementById('modal'), mBody = document.getElementById('m-body'), mTitle = document.getElementById('m-title');
+  let raf, stake = 50, rHist = '7.09x,1.04x,1.14x,3.39x,3.38x'.split(',');
 
-  document.getElementById('m-close').onclick = () => {
-    autoPlay = false; cancelAnimationFrame(raf); gSt = 'idle'; modal.style.display = 'none'; renderTab();
-  };
+  document.getElementById('m-back').onclick = () => { cancelAnimationFrame(raf); modal.style.display = 'none'; renderTab(); };
 
-  function buildControls() {
-    let extra = '';
-    if (mode === 'crash') {
-      extra = `<div class="row-flex"><span style="font-size:11px;color:#93c5fd">Авто-забор (x):</span><input type="number" step="0.1" min="1.2" max="50" value="${autoCash}" class="inp-box" onchange="autoCash=Math.max(1.2,Number(this.value)||2)"><button type="button" class="s-b ${autoPlay?'act':''}" onclick="toggleAuto()">${autoPlay?'🟢 Авто: ВКЛ':'⚪ Авто: ВЫКЛ'}</button></div>`;
-    } else if (mode === 'mines') {
-      extra = `<div class="row-flex"><span style="font-size:11px;color:#93c5fd">Клякс на поле:</span><div style="display:flex;gap:4px">` +
-        '2,3,5,8'.split(',').map(m => `<button type="button" class="s-b ${Number(m)===mineCnt?'act':''}" onclick="setMines(${m})">${m}</button>`).join('') + `</div></div>`;
-    } else if (mode === 'calib') {
-      extra = `<div class="row-flex"><span style="font-size:11px;color:#93c5fd">Шанс (${calibPct}% → x${(95/calibPct).toFixed(2)}):</span><div style="display:flex;gap:4px">` +
-        '20,45,60,75'.split(',').map(p => `<button type="button" class="s-b ${Number(p)===calibPct?'act':''}" onclick="setCalib(${p})">${p}%</button>`).join('') + `</div></div>`;
-    } else if (mode === 'drum') {
-      extra = `<div class="row-flex"><span style="font-size:11px;color:#93c5fd">Режим вращения:</span><button type="button" class="s-b ${autoPlay?'act':''}" onclick="toggleAuto()">${autoPlay?'🟢 Авто-спин: ВКЛ':'⚪ Авто-спин: ВЫКЛ'}</button></div>`;
-    }
-    cPanel.innerHTML = `
-      <div class="row-flex">
-        <span style="font-size:11px;color:#93c5fd">Ставка 💎:</span>
-        <div style="display:flex;gap:4px;align-items:center">
-          <button type="button" class="s-b" onclick="modStake(0.5)">1/2</button>
-          <input type="number" id="stk-in" value="${stake}" min="10" max="5000" class="inp-box" onchange="stake=Math.max(10,Math.floor(Number(this.value)||50));updGoTxt()">
-          <button type="button" class="s-b" onclick="modStake(2)">x2</button>
-        </div>
-      </div>` + extra;
-  }
-
-  window.modStake = (k) => { if (gSt === 'idle') { stake = Math.max(10, Math.min(Math.floor(st.bal), Math.floor(stake * k))); buildControls(); updGoTxt(); } };
-  window.setMines = (m) => { if (gSt === 'idle') { mineCnt = m; buildControls(); } };
-  window.setCalib = (p) => { if (gSt === 'idle') { calibPct = p; buildControls(); } };
-  window.toggleAuto = () => { autoPlay = !autoPlay; buildControls(); if (autoPlay && gSt === 'idle') goBtn.click(); };
-  function updGoTxt() { if (gSt === 'idle') goBtn.innerText = 'ЗАПУСТИТЬ (💎 ' + stake + ')'; }
-
-  function addSparks(x, y, col) {
-    for (let i = 0; i < 20; i++) {
-      const a = Math.random() * Math.PI * 2, v = 1.5 + Math.random() * 4.5;
-      sparks.push({ x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v, life: 1, col });
-    }
-  }
-
-  function drawProCompass(ctx, px, py, tx, ty) {
-    const mx = (px + tx) / 2, my = (py + ty) / 2;
-    const dx = tx - px, dy = ty - py, dist = Math.hypot(dx, dy) || 1;
-    const nx = -dy / dist, ny = dx / dist;
-    const hx = mx + nx * 62 - 8, hy = my + ny * 62 - 38;
-
-    ctx.strokeStyle = 'rgba(56,189,248,0.45)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(hx, hy, 24, 0, Math.PI * 2); ctx.stroke();
-
-    ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  function drawMiniCompass(ctx, px, py, tx, ty) {
+    const hx = (px + tx) / 2 - 12, hy = (py + ty) / 2 - 50;
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 4; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(px, py); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(tx, ty); ctx.stroke();
-
-    ctx.fillStyle = '#0284c7'; ctx.fillRect(hx - 4, hy - 22, 8, 16);
-    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#00f5d4'; ctx.beginPath(); ctx.arc(tx, ty, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f43f5e'; ctx.beginPath(); ctx.arc(tx, ty, 5, 0, Math.PI * 2); ctx.fill();
   }
-  function endRound(delta, win, msg) {
-    gSt = 'idle'; st.games++;
-    if (win) { st.wins++; drawMascot('happy'); beep(780, 0.16, 'triangle'); }
-    else { drawMascot('sad'); beep(180, 0.22, 'sawtooth'); }
-    if (mpOn) {
-      if (turn === 1) { if (delta > 0) s1 += delta; turn = 2; } else { if (delta > 0) s2 += delta; turn = 1; }
-      bMp.innerText = '👥 1 на 1: И' + turn + ' [' + s1 + ':' + s2 + ']';
-    } else { st.bal = Math.max(0, st.bal + delta); if (st.bal < 10) st.bal = 100; }
-    saveSt(); goBtn.className = 'go-b ' + (win ? 'win' : ''); goBtn.innerText = msg + ' · ЕЩЁ РАЗ';
-    if (autoPlay && (mode === 'crash' || mode === 'drum') && st.bal >= stake) {
-      setTimeout(() => { if (autoPlay && gSt === 'idle') goBtn.click(); }, 950);
+
+  window.openGame = (g) => {
+    cancelAnimationFrame(raf); modal.style.display = 'flex';
+    if (g === 'play_hub') {
+      mTitle.innerText = 'PLAY HUB';
+      mBody.innerHTML = `
+        <div class="card-g c-green" style="width:100%" onclick="openGame('upgrade')"><span class="hot-pill">🔥 HOT</span><h3>Upgrade</h3><p style="font-size:12px">Прокачай подарок или очки на колесе</p></div>
+        <div class="grid-2" style="width:100%">
+          <div class="card-g c-blue" onclick="openGame('mines')"><h3>Mines 5x5</h3><p style="font-size:11px">25 клеток, до 560x</p></div>
+          <div class="card-g c-pink" onclick="openGame('spins')"><h3>Spins 5x5</h3><p style="font-size:11px">Барабан подарков</p></div>
+          <div class="card-g c-purple" onclick="openGame('plinko')"><h3>Plinko</h3><p style="font-size:11px">Пирамида до 33x</p></div>
+          <div class="card-g c-dark" onclick="openGame('dice')"><h3>Dice 0-100</h3><p style="font-size:11px">Больше или меньше</p></div>
+        </div>
+        <div class="card-g c-orange" style="width:100%" onclick="openGame('crafts')"><h3>Crafts</h3><p style="font-size:12px">Объедини 2+ подарка в новый (до x100)</p></div>`;
+    } else if (g === 'pvp_hub') {
+      mTitle.innerText = 'PVP HUB';
+      mBody.innerHTML = `
+        <div class="card-g c-blue" style="width:100%" onclick="openGame('battle')"><h3>🎡 Колесо Битвы</h3><p style="font-size:12px">Общий банк раунда, побеждает выбранный сектор</p></div>
+        <div class="card-g c-orange" style="width:100%" onclick="openGame('icefire')"><h3>❄️ Лёд против Пламени 🔥</h3><p style="font-size:12px">Командная дуэль стихий 50/50</p></div>`;
+    } else if (g === 'rocket') {
+      mTitle.innerText = 'ROCKET ДУГА';
+      mBody.innerHTML = `
+        <div style="position:relative;width:100%">
+          <canvas id="rk-cvs" width="330" height="210" style="width:100%;background:#11151f;border-radius:16px;border:1px solid #1e293b"></canvas>
+          <div id="rk-x" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:#818cf8">1.00x</div>
+        </div>
+        <div class="hist-row" id="rk-hist">${rHist.map(x => `<span class="h-pill ${parseFloat(x)<1.5?'low':''}">${x}</span>`).join('')}</div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#94a3b8">Ставка 💎:</span><div style="display:flex;gap:5px">${'25,50,100,250'.split(',').map(s=>`<button type="button" class="chip ${Number(s)===stake?'act':''}" onclick="stake=${s};openGame('rocket')">${s}</button>`).join('')}</div></div>
+          <button type="button" class="bet-btn" id="rk-btn">Place bet (💎 ${stake})</button>
+        </div>
+        <div class="panel" style="gap:6px;font-size:12px">
+          <div style="display:flex;justify-content:space-between;padding:6px;background:#10b98122;border:1px solid #10b981;border-radius:10px"><span>@architect_1 · 💎 100</span><b style="color:#34d399">+340 💎 🧸</b></div>
+          <div style="display:flex;justify-content:space-between;padding:6px;background:#10b98122;border:1px solid #10b981;border-radius:10px"><span>@circul_pro · 💎 50</span><b style="color:#34d399">+169 💎 ❤️</b></div>
+        </div>`;
+      initRocket();
     }
-  }
-
-  window.openGame = (m) => {
-    mode = m; gSt = 'idle'; autoPlay = false; cancelAnimationFrame(raf); sparks = new Array();
-    modal.style.display = 'flex'; buildControls(); goBtn.className = 'go-b'; goBtn.innerText = 'ЗАПУСТИТЬ (💎 ' + stake + ')';
-    const titles = { pvp:'PvP Дуэль Градусов', crash:'Взлет Грифеля', mines:'Сетка Чернил', radius:'Точный Радиус', orbit:'Орбита Иглы', calib:'Калибровка Шанса', drum:'Шестерни Удачи' };
-    document.getElementById('m-title').innerText = titles[m] || 'Мастерская';
-    setupStage();
-  };
-
-  function setupStage() {
-    if (mode === 'mines') {
-      mBody.innerHTML = `<div id="m-mult" style="font-size:15px;font-weight:900;color:#00f5d4;margin-bottom:10px">Следующий шаг: x1.25</div><div class="m-grid" id="m-grid"></div>`;
-      const mg = document.getElementById('m-grid'); for (let i = 0; i < 16; i++) mg.innerHTML += `<button type="button" class="m-c" onclick="hitMine(${i},this)">📐</button>`;
-    } else if (mode === 'drum') {
-      mBody.innerHTML = `<div style="display:flex;gap:12px;background:#071330;padding:24px 20px;border-radius:22px;border:2px solid #38bdf8"><div id="d1" style="font-size:50px;width:64px;text-align:center;background:#0e2047;border-radius:14px;padding:8px 0">🧭</div><div id="d2" style="font-size:50px;width:64px;text-align:center;background:#0e2047;border-radius:14px;padding:8px 0">📐</div><div id="d3" style="font-size:50px;width:64px;text-align:center;background:#0e2047;border-radius:14px;padding:8px 0">⚙️</div></div><div id="g-info" style="margin-top:14px;font-size:13px;font-weight:800;color:#93c5fd">3 в ряд = x6 · 2 в ряд = x1.8</div>`;
+    else if (g === 'battle') {
+      mTitle.innerText = 'КОЛЕСО БИТВЫ';
+      mBody.innerHTML = `
+        <canvas id="bt-cvs" width="260" height="240"></canvas>
+        <div style="font-size:12px;color:#94a3b8">TOTAL POOL: <b style="color:#38bdf8;font-size:16px">💎 265</b></div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#94a3b8">Взнос в банк:</span><div style="display:flex;gap:5px">${'50,100,250'.split(',').map(s=>`<button type="button" class="chip ${Number(s)===stake?'act':''}" onclick="stake=${s};openGame('battle')">${s}</button>`).join('')}</div></div>
+          <button type="button" class="bet-btn" style="background:linear-gradient(90deg,#f59e0b,#eab308);color:#000" id="bt-btn">Join the Battle (💎 ${stake})</button>
+        </div>`;
+      initBattle();
+    } else if (g === 'icefire') {
+      mTitle.innerText = 'ЛЁД ПРОТИВ ПЛАМЕНИ';
+      mBody.innerHTML = `
+        <div style="width:100%;height:150px;border-radius:18px;overflow:hidden;display:flex;border:1.5px solid #38bdf8">
+          <div style="width:42%;background:linear-gradient(135deg,#0284c7,#38bdf8);padding:12px;display:flex;flex-direction:column;justify-content:space-between"><b>❄️ 42%</b><span style="font-size:11px">Ice Team</span></div>
+          <div style="width:58%;background:linear-gradient(135deg,#ea580c,#9a3412);padding:12px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end"><b>🔥 58%</b><span style="font-size:11px">Fire Team</span></div>
+        </div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#94a3b8">Ставка 💎:</span><div style="display:flex;gap:5px">${'50,100,250'.split(',').map(s=>`<button type="button" class="chip ${Number(s)===stake?'act':''}" onclick="stake=${s};openGame('icefire')">${s}</button>`).join('')}</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button type="button" class="bet-btn" style="background:#0284c7" onclick="playIceFire('ice')">❄️ Join Ice</button>
+            <button type="button" class="bet-btn" style="background:#ea580c" onclick="playIceFire('fire')">🔥 Join Fire</button>
+          </div>
+        </div>`;
+    } else if (g === 'free24' || g === 'free') {
+      const prize = g === 'free24' ? '💍|Кольцо|1200' : '🎂|Тортик|1000';
+      st.bal += 150; st.inv = st.inv ? (st.inv + ',' + prize) : prize; saveSt(); drawMascot('happy');
+      alert('Сундук открыт! Выпал подарок: ' + prize.split('|').at(0) + ' ' + prize.split('|').at(1) + ' и +150 💎!');
+      modal.style.display = 'none'; renderTab();
     } else {
-      mBody.innerHTML = `<canvas id="cvs" width="320" height="255" style="background:#050d21;background-image:linear-gradient(rgba(56,189,248,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.12) 1px,transparent 1px);background-size:20px 20px;border-radius:18px;border:1.5px solid #38bdf8"></canvas><div id="g-info" style="margin-top:10px;font-size:13px;font-weight:800;color:#93c5fd">Настрой параметры и жми ЗАПУСТИТЬ</div>`;
-      const c = document.getElementById('cvs'), ctx = c.getContext('2d');
-      if (mode === 'calib') drawWheelCalib(ctx, c.width/2, c.height/2, 0);
-      else { ctx.strokeStyle = 'rgba(56,189,248,.25)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(160, 137, 82, 0, Math.PI*2); ctx.stroke(); drawProCompass(ctx, 160, 137, 242, 137); }
+      openPlayHubGame(g);
     }
-  }
-
-  function drawWheelCalib(ctx, cx, cy, ang) {
-    const r = 88, winArc = (calibPct / 100) * Math.PI * 2;
-    ctx.strokeStyle = '#172e5c'; ctx.lineWidth = 22; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
-    ctx.strokeStyle = '#00f5d4'; ctx.lineWidth = 22; ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + winArc); ctx.stroke();
-    drawProCompass(ctx, cx, cy, cx + Math.cos(ang)*r, cy + Math.sin(ang)*r);
-    ctx.fillStyle = '#fff'; ctx.font = '900 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(calibPct + '%', cx, cy + 8);
-  }
-
-  window.hitMine = (idx, el) => {
-    if (gSt !== 'run' || el.innerText !== '📐') return;
-    if (mines.includes(idx)) { el.style.background = '#e11d48'; el.innerText = '💧'; document.getElementById('m-mult').innerText = 'Клякса! Чертеж испорчен'; endRound(0, false, 'КЛЯКСА'); }
-    else { beep(520 + opened*60, 0.08); el.style.background = '#0284c7'; el.innerText = '💎'; opened++; const step = 0.22 + mineCnt*0.07; val = +(1 + opened*step).toFixed(2); document.getElementById('m-mult').innerText = 'Текущий: x' + val + ' · Следующий: x' + +(1 + (opened+1)*step).toFixed(2); goBtn.className = 'go-b win'; goBtn.innerText = 'ЗАБРАТЬ 💎 ' + Math.round(stake*val); }
   };
-  goBtn.onclick = () => {
-    if (gSt === 'idle') {
-      if (!mpOn && st.bal < stake) return alert('Не хватает 💎!');
-      if (!mpOn) { st.bal -= stake; saveSt(); }
-      gSt = 'run'; sparks = new Array(); beep(360, 0.08);
-      if (mode === 'crash') { val = 1.0; lim = +(1.22 + Math.random()*4.2).toFixed(2); goBtn.className = 'go-b stop'; goBtn.innerText = 'ЗАБРАТЬ (💎 ' + stake + ')'; loop(); }
-      else if (mode === 'orbit' || mode === 'pvp') { val = 0; lim = Math.floor(30 + Math.random()*295); goBtn.className = 'go-b stop'; goBtn.innerText = 'ОСТАНОВИТЬ ИГЛУ!'; loop(); }
-      else if (mode === 'radius') { val = 18; lim = Math.floor(52 + Math.random()*52); goBtn.className = 'go-b stop'; goBtn.innerText = 'ЗАФИКСИРОВАТЬ!'; loop(); }
-      else if (mode === 'mines') { setupStage(); opened = 0; val = 1.0; mines = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'.split(',').map(Number).sort(()=>Math.random()-0.5).slice(0, mineCnt); goBtn.className = 'go-b win'; goBtn.innerText = 'ОТКРЫВАЙ КЛЕТКИ'; }
-      else if (mode === 'calib') {
-        goBtn.className = 'go-b stop'; goBtn.innerText = 'КАЛИБРОВКА...'; let ang = -Math.PI/2, spd = 0.42 + Math.random()*0.25;
-        const c = document.getElementById('cvs'), ctx = c.getContext('2d');
-        const spin = setInterval(() => {
-          ang += spd; spd *= 0.965; ctx.clearRect(0, 0, c.width, c.height); drawWheelCalib(ctx, c.width/2, c.height/2, ang);
+
+  function initRocket() {
+    let run = false, x = 1.0, lim = 2.0;
+    const btn = document.getElementById('rk-btn'), xEl = document.getElementById('rk-x'), c = document.getElementById('rk-cvs'), ctx = c.getContext('2d');
+    btn.onclick = () => {
+      if (!run) {
+        if (st.bal < stake) return alert('Мало 💎!'); st.bal -= stake; saveSt();
+        run = true; x = 1.0; lim = +(1.15 + Math.random() * 4.5).toFixed(2);
+        btn.className = 'bet-btn stop'; btn.innerText = 'Забрать (💎 ' + stake + ')';
+        const step = () => {
+          x += 0.015 + x * 0.004; xEl.innerText = x.toFixed(2) + 'x'; btn.innerText = 'Забрать (💎 ' + Math.round(stake * x) + ')';
+          ctx.clearRect(0,0,330,210);
+          const p = Math.min(1, (x - 1) / 4), tx = 25 + p * 270, ty = 185 - p * 145;
+          ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(25, 185); ctx.quadraticCurveTo(165, 185, tx, ty); ctx.stroke();
+          drawMiniCompass(ctx, tx - 20, ty + 25, tx, ty);
+          if (x >= lim) {
+            run = false; btn.className = 'bet-btn'; btn.innerText = 'СЛОМАЛСЯ на ' + lim + 'x · Ещё раз';
+            rHist.unshift(lim + 'x'); if (rHist.length > 6) rHist.pop();
+            document.getElementById('rk-hist').innerHTML = rHist.map(v => `<span class="h-pill ${parseFloat(v)<1.5?'low':''}">${v}</span>`).join('');
+            drawMascot('sad'); return;
+          }
+          if (run) raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
+      } else {
+        run = false; cancelAnimationFrame(raf);
+        const w = Math.round(stake * x); st.bal += w; saveSt(); drawMascot('happy');
+        btn.className = 'bet-btn win'; btn.innerText = 'УСПЕЛ! +' + w + ' 💎 · Ещё раз';
+      }
+    };
+  }
+
+  function initBattle() {
+    const c = document.getElementById('bt-cvs'), ctx = c.getContext('2d'), cols = '#3b82f6,#10b981,#f59e0b,#ec4899,#8b5cf6'.split(',');
+    function drawW(rot) {
+      ctx.clearRect(0,0,260,240);
+      for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(130, 125); ctx.arc(130, 125, 92, rot + i*Math.PI*0.4, rot + (i+1)*Math.PI*0.4); ctx.fillStyle = cols.at(i); ctx.fill(); }
+      ctx.fillStyle = '#0d1017'; ctx.beginPath(); ctx.arc(130, 125, 34, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '900 13px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('POOL', 130, 129);
+      drawMiniCompass(ctx, 130, 125, 130 + Math.cos(rot)*92, 125 + Math.sin(rot)*92);
+    }
+    drawW(0);
+    document.getElementById('bt-btn').onclick = () => {
+      if (st.bal < stake) return alert('Мало 💎!'); st.bal -= stake; saveSt();
+      let r = 0, spd = 0.45 + Math.random()*0.2;
+      const t = setInterval(() => {
+        r += spd; spd *= 0.96; drawW(r);
+        if (spd < 0.01) {
+          clearInterval(t);
+          if (Math.random() < 0.45) { const w = Math.round(stake * 2.2); st.bal += w; saveSt(); drawMascot('happy'); alert('Победа в битве! Выигрыш +' + w + ' 💎'); }
+          else { drawMascot('sad'); alert('В этом раунде победил соперник!'); }
+        }
+      }, 22);
+    };
+  }
+
+  window.playIceFire = (team) => {
+    if (st.bal < stake) return alert('Мало 💎!'); st.bal -= stake; saveSt();
+    const winTeam = Math.random() < 0.5 ? 'ice' : 'fire';
+    if (team === winTeam) { const w = Math.round(stake * 1.92); st.bal += w; saveSt(); drawMascot('happy'); alert('Победила команда ' + (winTeam==='ice'?'❄️ ICE':'🔥 FIRE') + '! Ваш приз +' + w + ' 💎'); }
+    else { drawMascot('sad'); alert('Победила команда ' + (winTeam==='ice'?'❄️ ICE':'🔥 FIRE') + '. Попробуйте ещё раз!'); }
+  };
+  let upgPct = 48, mineNum = 3, spinAuto = false, spinFast = false;
+
+  function openPlayHubGame(g) {
+    if (g === 'upgrade') {
+      mTitle.innerText = 'UPGRADE';
+      const mult = +(96 / upgPct).toFixed(2);
+      mBody.innerHTML = `
+        <canvas id="upg-cvs" width="250" height="230"></canvas>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%">
+          <div class="panel" style="align-items:center;text-align:center"><span style="font-size:11px;color:#94a3b8">Взнос</span><b style="color:#38bdf8">💎 ${stake}</b></div>
+          <div class="panel" style="align-items:center;text-align:center"><span style="font-size:11px;color:#94a3b8">Цель (x${mult})</span><b style="color:#10b981">💎 ${Math.round(stake*mult)}</b></div>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center">
+          ${'48:X2,24:X4,12:X8,35:35%,55:55%,75:75%'.split(',').map(x => {
+            const p = x.split(':');
+            return `<button type="button" class="chip ${Number(p.at(0))===upgPct?'act':''}" onclick="upgPct=${p.at(0)};openGame('upgrade')">${p.at(1)}</button>`;
+          }).join('')}
+        </div>
+        <button type="button" class="bet-btn win" id="upg-btn">Upgrade (💎 ${stake})</button>`;
+      drawUpgWheel(0);
+      document.getElementById('upg-btn').onclick = () => {
+        if (st.bal < stake) return alert('Мало 💎!'); st.bal -= stake; saveSt();
+        const btn = document.getElementById('upg-btn'); btn.disabled = true;
+        let a = 0, spd = 0.44 + Math.random()*0.22;
+        const t = setInterval(() => {
+          a += spd; spd *= 0.962; drawUpgWheel(a);
           if (spd < 0.008) {
-            clearInterval(spin); const norm = ((ang + Math.PI/2)%(Math.PI*2) + Math.PI*2)%(Math.PI*2), winArc = (calibPct/100)*Math.PI*2, mult = +(95/calibPct).toFixed(2);
-            if (norm <= winArc) { const w = Math.round(stake*mult); document.getElementById('g-info').innerText = 'Попадание! Множитель x' + mult; endRound(w, true, 'УСПЕХ +' + w); }
-            else { document.getElementById('g-info').innerText = 'Стрелка вышла за сектор ' + calibPct + '%'; endRound(0, false, 'СБОЙ'); }
+            clearInterval(t); btn.disabled = false;
+            const norm = ((a % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+            const winArc = (upgPct / 100) * Math.PI * 2;
+            if (norm <= winArc) {
+              const w = Math.round(stake * mult); st.bal += w; saveSt(); drawMascot('happy');
+              alert('Апгрейд прошел! Награда +' + w + ' 💎');
+            } else { drawMascot('sad'); alert('Стрелка остановилась вне зеленого сектора!'); }
           }
         }, 20);
-      } else if (mode === 'drum') {
-        goBtn.className = 'go-b stop'; goBtn.innerText = 'ВРАЩЕНИЕ...'; const ic = '🧭,📐,⚙️,💎,🧸,👑'.split(','); let ticks = 0;
-        const roll = setInterval(() => {
-          ticks++; beep(300 + ticks*18, 0.03);
-          if (ticks < 12) document.getElementById('d1').innerText = ic.at(ticks%6);
-          if (ticks < 18) document.getElementById('d2').innerText = ic.at((ticks+2)%6);
-          document.getElementById('d3').innerText = ic.at((ticks+4)%6);
-          if (ticks >= 24) {
-            clearInterval(roll); const a = ic.at(Math.floor(Math.random()*6)), b = ic.at(Math.floor(Math.random()*6)), c = ic.at(Math.floor(Math.random()*6));
-            document.getElementById('d1').innerText = a; document.getElementById('d2').innerText = b; document.getElementById('d3').innerText = c;
-            if (a===b && b===c) { const w = stake*6; document.getElementById('g-info').innerText = 'ДЖЕКПОТ 3 в ряд! +' + w; endRound(w, true, 'ДЖЕКПОТ +' + w); }
-            else if (a===b || b===c || a===c) { const w = Math.round(stake*1.8); document.getElementById('g-info').innerText = 'Пара совпала! +' + w; endRound(w, true, 'ПАРА +' + w); }
-            else { document.getElementById('g-info').innerText = 'Не совпало'; endRound(0, false, 'МИМО'); }
-          }
-        }, 45);
-      }
-    } else if (gSt === 'run') {
-      cancelAnimationFrame(raf);
-      if (mode === 'crash') { const w = Math.round(stake*val); addSparks(160, 125, '#00f5d4'); document.getElementById('g-info').innerText = 'Зафиксировано на x' + val.toFixed(2); endRound(w, true, 'УСПЕЛ +' + w); }
-      else if (mode === 'mines' && opened > 0) { const w = Math.round(stake*val); endRound(w, true, 'ЗАБРАНО +' + w); }
-      else if (mode === 'radius') { const ok = Math.abs(val-lim)<=12; if (ok) addSparks(160, 135, '#00f5d4'); document.getElementById('g-info').innerText = ok ? 'Идеально по контуру!' : 'Отклонение ' + Math.round(Math.abs(val-lim)) + ' мм'; endRound(ok ? Math.round(stake*2.5) : 0, ok, ok ? 'ТОЧНО!' : 'МИМО'); }
-      else if (mode === 'orbit' || mode === 'pvp') { const deg = Math.round(((val*180/Math.PI)%360+360)%360), diff = Math.min(Math.abs(deg-lim), 360-Math.abs(deg-lim)), ok = diff<=26; if (ok) addSparks(160, 135, '#00f5d4'); document.getElementById('g-info').innerText = 'Угол: ' + deg + '° (цель ' + lim + '°)'; endRound(ok ? Math.round(stake*2.6) : 0, ok, ok ? 'ПОБЕДА!' : 'МИМО'); }
-    }
-  };
-
-  function loop() {
-    const c = document.getElementById('cvs'); if (!c) return;
-    const ctx = c.getContext('2d'), W = c.width, H = c.height; ctx.clearRect(0, 0, W, H);
-    if (mode === 'crash') {
-      val += 0.015 + val*0.0045; goBtn.innerText = 'ЗАБРАТЬ (💎 ' + Math.round(stake*val) + ')';
-      const p = Math.min(1, (val-1)/4.2), tx = 28 + p*(W-60), ty = H - 28 - p*(H-68);
-      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(28, H-28); ctx.quadraticCurveTo(W*0.5, H-28, tx, ty); ctx.stroke();
-      drawProCompass(ctx, tx-24, ty+28, tx, ty); ctx.fillStyle = '#fff'; ctx.font = '900 40px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('x' + val.toFixed(2), W/2, 52);
-      if (autoPlay && val >= autoCash) { const w = Math.round(stake*val); addSparks(tx, ty, '#00f5d4'); endRound(w, true, 'АВТО +' + w); return; }
-      if (val >= lim) { addSparks(tx, ty, '#f43f5e'); endRound(0, false, 'ПОЛОМКА на x' + lim); return; }
-    } else if (mode === 'radius') {
-      val += 2.2; if (val > 112) val = 18;
-      ctx.strokeStyle = 'rgba(0,245,212,.32)'; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(W/2, H/2+10, lim, 0, Math.PI*2); ctx.stroke();
-      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(W/2, H/2+10, val, 0, Math.PI*2); ctx.stroke();
-      drawProCompass(ctx, W/2, H/2+10, W/2+val, H/2+10);
+      };
+    } else if (g === 'mines') {
+      mTitle.innerText = 'MINES 5x5';
+      mBody.innerHTML = `
+        <div class="hist-row" id="mn-strip">
+          <span class="h-pill">1.10x</span><span class="h-pill">1.26x</span><span class="h-pill">1.45x</span><span class="h-pill">1.68x</span><span class="h-pill">1.96x</span><span class="h-pill" style="border-color:#f59e0b;color:#fcd34d">560.62x</span>
+        </div>
+        <div class="grid5" id="mn-grid"></div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#94a3b8">Мин на поле:</span>
+            <div style="display:flex;gap:5px">${'3,5,7,10'.split(',').map(m=>`<button type="button" class="chip ${Number(m)===mineNum?'act':''}" onclick="mineNum=${m};openGame('mines')">💣 ${m}</button>`).join('')}</div>
+          </div>
+          <button type="button" class="bet-btn" id="mn-btn">Start Mines (💎 ${stake})</button>
+        </div>`;
+      initMines25();
+    } else if (g === 'spins') {
+      mTitle.innerText = 'SPINS 5x5';
+      spinAuto = false;
+      mBody.innerHTML = `
+        <div class="grid5" id="sp-grid"></div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <button type="button" class="chip ${spinFast?'act':''}" onclick="spinFast=!spinFast;openGame('spins')">⚡ Speed: ${spinFast?'Fast':'Norm'}</button>
+            <button type="button" class="chip" id="sp-auto-b" onclick="toggleSpinAuto()">🔄 Auto: OFF</button>
+          </div>
+          <button type="button" class="bet-btn" style="background:linear-gradient(90deg,#8b5cf6,#d946ef)" id="sp-btn">Spin 5x5 (💎 ${stake})</button>
+        </div>`;
+      fillSpinsGrid(false);
+      initSpins();
     } else {
-      val += 0.085; const r = 82, cx = W/2, cy = H/2+12, tRad = lim*Math.PI/180;
-      ctx.strokeStyle = '#172e5c'; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
-      ctx.strokeStyle = '#00f5d4'; ctx.lineWidth = 15; ctx.beginPath(); ctx.arc(cx, cy, r, tRad-0.32, tRad+0.32); ctx.stroke();
-      drawProCompass(ctx, cx, cy, cx + Math.cos(val)*r, cy + Math.sin(val)*r);
-      ctx.fillStyle = '#7dd3fc'; ctx.font = '800 14px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Цель: ' + lim + '°', cx, 24);
+      openRestGames(g);
     }
-    sparks.forEach((s, i) => { s.x += s.vx; s.y += s.vy; s.life -= 0.04; if (s.life <= 0) sparks.splice(i, 1); else { ctx.globalAlpha = s.life; ctx.fillStyle = s.col; ctx.fillRect(s.x, s.y, 4, 4); ctx.globalAlpha = 1; } });
-    if (gSt === 'run') raf = requestAnimationFrame(loop);
   }
+
+  function drawUpgWheel(ang) {
+    const c = document.getElementById('upg-cvs'); if (!c) return;
+    const ctx = c.getContext('2d'), cx = 125, cy = 115, r = 88, arc = (upgPct / 100) * Math.PI * 2;
+    ctx.clearRect(0,0,250,230);
+    ctx.strokeStyle = '#1e2536'; ctx.lineWidth = 18; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 18; ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + arc); ctx.stroke();
+    ctx.fillStyle = '#161b28'; ctx.beginPath(); ctx.arc(cx, cy, 52, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#10b981'; ctx.font = '900 18px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(upgPct + '%', cx, cy + 6);
+    const tipX = cx + Math.cos(ang - Math.PI/2)*(r + 12), tipY = cy + Math.sin(ang - Math.PI/2)*(r + 12);
+    drawMiniCompass(ctx, cx, cy, tipX, tipY);
+  }
+
+  function initMines25() {
+    const grid = document.getElementById('mn-grid'), btn = document.getElementById('mn-btn');
+    let active = false, bombs = new Array(), opened = 0, mult = 1.0;
+    for (let i = 0; i < 25; i++) grid.innerHTML += `<button type="button" class="cell5" data-i="${i}">🎁</button>`;
+    grid.querySelectorAll('.cell5').forEach(cell => {
+      cell.onclick = () => {
+        const idx = Number(cell.dataset.i);
+        if (!active || cell.innerText !== '🎁') return;
+        if (bombs.includes(idx)) {
+          cell.style.background = '#ef4444'; cell.innerText = '💣'; active = false;
+          btn.className = 'bet-btn'; btn.innerText = 'ВЗРЫВ! Попробовать снова'; drawMascot('sad');
+        } else {
+          cell.style.background = '#10b981'; cell.innerText = '💎'; opened++;
+          mult = +(1 + opened * (0.12 + mineNum * 0.05)).toFixed(2);
+          btn.className = 'bet-btn win'; btn.innerText = 'Забрать 💎 ' + Math.round(stake * mult) + ' (' + mult + 'x)';
+        }
+      };
+    });
+    btn.onclick = () => {
+      if (!active) {
+        if (st.bal < stake) return alert('Мало 💎!'); st.bal -= stake; saveSt();
+        active = true; opened = 0; mult = 1.0;
+        bombs = Array.from({length:25}, (_,i)=>i).sort(()=>Math.random()-0.5).slice(0, mineNum);
+        grid.querySelectorAll('.cell5').forEach(c => { c.style.background = '#1e2536'; c.innerText = '🎁'; });
+        btn.className = 'bet-btn stop'; btn.innerText = 'Открывай клетки...';
+      } else if (opened > 0) {
+        active = false; const w = Math.round(stake * mult); st.bal += w; saveSt(); drawMascot('happy');
+        btn.className = 'bet-btn'; btn.innerText = 'Забрано +' + w + ' 💎 · Играть';
+      }
+    };
+  }
+
+  function fillSpinsGrid(winHighlight) {
+    const syms = '🧸,❤️,💍,🎁,🎂,🧭,💎'.split(',');
+    const g = document.getElementById('sp-grid'); if (!g) return;
+    g.innerHTML = '';
+    for (let i = 0; i < 25; i++) {
+      const s = syms.at(Math.floor(Math.random() * syms.length));
+      g.innerHTML += `<button type="button" class="cell5" style="${winHighlight && s==='💎' ? 'border-color:#10b981;background:#10b98133' : ''}">${s}</button>`;
+    }
+  }
+  window.toggleSpinAuto = () => {
+    spinAuto = !spinAuto;
+    const b = document.getElementById('sp-auto-b');
+    if (b) { b.innerText = spinAuto ? '🔄 Auto: ON' : '🔄 Auto: OFF'; b.className = spinAuto ? 'chip act' : 'chip'; }
+    if (spinAuto) document.getElementById('sp-btn').click();
+  };
+  function initSpins() {
+    const btn = document.getElementById('sp-btn');
+    btn.onclick = () => {
+      if (st.bal < stake) { spinAuto = false; return alert('Мало 💎!'); }
+      st.bal -= stake; saveSt(); btn.disabled = true;
+      let t = 0, maxT = spinFast ? 5 : 12;
+      const iv = setInterval(() => {
+        t++; fillSpinsGrid(false);
+        if (t >= maxT) {
+          clearInterval(iv); btn.disabled = false; fillSpinsGrid(true);
+          const gems = Array.from(document.querySelectorAll('#sp-grid .cell5')).filter(c => c.innerText === '💎').length;
+          if (gems >= 4) { const w = Math.round(stake * (gems * 0.65)); st.bal += w; saveSt(); drawMascot('happy'); btn.innerText = 'Выпало ' + gems + ' 💎 (+' + w + ')!'; }
+          else { drawMascot('sad'); btn.innerText = 'Spin 5x5 (💎 ' + stake + ')'; }
+          if (spinAuto) setTimeout(() => { if (spinAuto && document.getElementById('sp-btn')) btn.click(); }, 650);
+        }
+      }, spinFast ? 35 : 65);
+    };
+  }
+  let plinkoDiff = 'Medium', diceTarget = 50, diceOver = true, craftMode = 'Safe';
+
+  function openRestGames(g) {
+    if (g === 'plinko') {
+      mTitle.innerText = 'PLINKO';
+      const mults = plinkoDiff === 'Easy' ? '5,2,1.4,1.1,0.7,1.1,1.4,2,5' : (plinkoDiff === 'Medium' ? '11,4,2,1.1,0.5,1.1,2,4,11' : '33,11,4,1.2,0.3,1.2,4,11,33');
+      mBody.innerHTML = `
+        <canvas id="pl-cvs" width="320" height="230" style="background:linear-gradient(180deg,#1e1b4b,#0f172a);border-radius:16px;border:1px solid #6366f1"></canvas>
+        <div style="display:grid;grid-template-columns:repeat(9,1fr);gap:3px;width:100%;text-align:center">
+          ${mults.split(',').map(m => `<div style="background:#312e81;border:1px solid #818cf8;border-radius:6px;padding:4px 0;font-size:10px;font-weight:900">${m}x</div>`).join('')}
+        </div>
+        <div class="panel">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+            ${'Easy,Medium,Hard'.split(',').map(d => `<button type="button" class="chip ${d===plinkoDiff?'act':''}" onclick="plinkoDiff='${d}';openGame('plinko')">${d}</button>`).join('')}
+          </div>
+          <button type="button" class="bet-btn" style="background:linear-gradient(90deg,#6366f1,#8b5cf6)" id="pl-btn">Place Bet (💎 ${stake})</button>
+        </div>`;
+      initPlinko(mults.split(',').map(Number));
+    } else if (g === 'dice') {
+      mTitle.innerText = 'DICE 0-100';
+      const chance = diceOver ? (100 - diceTarget) : diceTarget;
+      const mult = +(96 / Math.max(5, chance)).toFixed(2);
+      mBody.innerHTML = `
+        <div class="panel" style="padding:18px 14px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:6px"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          <input type="range" min="10" max="90" value="${diceTarget}" style="width:100%;accent-color:#10b981" oninput="diceTarget=Number(this.value);openGame('dice')">
+          <div id="dc-res" style="text-align:center;font-size:28px;font-weight:900;color:#38bdf8;margin-top:10px">${diceTarget}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%">
+          <div class="panel"><span style="font-size:11px;color:#94a3b8">Множитель</span><b>${mult}x</b></div>
+          <div class="panel" onclick="diceOver=!diceOver;openGame('dice')"><span style="font-size:11px;color:#94a3b8">${diceOver?'Больше ⇅':'Меньше ⇅'}</span><b>${diceTarget} (${chance}%)</b></div>
+        </div>
+        <button type="button" class="bet-btn win" id="dc-btn">Place Bet (💎 ${stake})</button>`;
+      document.getElementById('dc-btn').onclick = () => {
+        if (st.bal < stake) return alert('Мало 💎!'); st.bal -= stake; saveSt();
+        const roll = +(Math.random() * 100).toFixed(2);
+        const resEl = document.getElementById('dc-res');
+        resEl.innerText = roll;
+        const win = diceOver ? (roll > diceTarget) : (roll < diceTarget);
+        if (win) { const w = Math.round(stake * mult); st.bal += w; saveSt(); resEl.style.color = '#10b981'; drawMascot('happy'); }
+        else { resEl.style.color = '#ef4444'; drawMascot('sad'); }
+      };
+    } else if (g === 'crafts') {
+      mTitle.innerText = 'CRAFTS';
+      const items = st.inv ? st.inv.split(',').filter(Boolean) : new Array();
+      mBody.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%">
+          ${'Safe:x2:50,Normal:x8:25,Risky:x100:8'.split(',').map(c => {
+            const p = c.split(':');
+            return `<div class="panel ${p.at(0)===craftMode?'c-orange':''}" style="align-items:center;text-align:center" onclick="craftMode='${p.at(0)}';openGame('crafts')"><b>${p.at(0)}</b><span style="font-size:11px;color:#38bdf8">${p.at(1)} (${p.at(2)}%)</span></div>`;
+          }).join('')}
+        </div>
+        <div class="panel">
+          <span style="font-size:12px;color:#94a3b8">В рюкзаке предметов: <b>${items.length}</b> (нужно минимум 2)</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${items.map(it => `<span class="chip">${it.split('|').at(0)} ${it.split('|').at(1)}</span>`).join('') || '<span style="font-size:11px;color:#64748b">Купите подарки в Рюкзаке для крафта</span>'}</div>
+        </div>
+        <button type="button" class="bet-btn" id="cr-btn">${items.length >= 2 ? 'Объединить 2 подарка' : 'Добавьте 2 подарка в Рюкзак'}</button>`;
+      document.getElementById('cr-btn').onclick = () => {
+        if (items.length < 2) return alert('Купите минимум 2 подарка в разделе Рюкзак!');
+        items.splice(0, 2); st.inv = items.join(',');
+        const chance = craftMode === 'Safe' ? 0.5 : (craftMode === 'Normal' ? 0.25 : 0.08);
+        if (Math.random() < chance) {
+          const prize = craftMode === 'Risky' ? '👑|Корона Архитектора|5000' : '💍|Кольцо|1200';
+          st.inv = st.inv ? (st.inv + ',' + prize) : prize;
+          saveSt(); drawMascot('happy'); alert('Крафт успешен! Создан предмет: ' + prize.split('|').at(0) + ' ' + prize.split('|').at(1));
+        } else { saveSt(); drawMascot('sad'); alert('Крафт не удался — предметы сгорели при сборке!'); }
+        openGame('crafts');
+      };
+    }
+  }
+
+  function initPlinko(mults) {
+    const c = document.getElementById('pl-cvs'), ctx = c.getContext('2d');
+    function drawPins(ball) {
+      ctx.clearRect(0,0,320,230);
+      ctx.fillStyle = '#e0e7ff';
+      for (let r = 2; r < 10; r++) {
+        for (let i = 0; i <= r; i++) {
+          const x = 160 + (i - r / 2) * 26, y = 20 + r * 20;
+          ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      if (ball) { ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(ball.x, ball.y, 6, 0, Math.PI * 2); ctx.fill(); }
+    }
+    drawPins(null);
+    document.getElementById('pl-btn').onclick = () => {
+      if (st.bal < stake) return alert('Мало 💎!'); st.bal -= stake; saveSt();
+      let bx = 160, by = 25, step = 0, idx = 4;
+      const t = setInterval(() => {
+        step++; const dir = Math.random() < 0.5 ? -1 : 1;
+        bx += dir * 13; by += 22;
+        if (dir > 0 && step % 2 === 0) idx = Math.min(8, idx + 1);
+        if (dir < 0 && step % 2 === 0) idx = Math.max(0, idx - 1);
+        drawPins({ x: bx, y: by });
+        if (step >= 8) {
+          clearInterval(t);
+          const m = mults.at(idx), w = Math.round(stake * m);
+          st.bal += w; saveSt(); if (m >= 1) drawMascot('happy'); else drawMascot('sad');
+          drawPins(null);
+        }
+      }, 65);
+    };
+  }
+
   renderTab();
 </script>
 </body>
