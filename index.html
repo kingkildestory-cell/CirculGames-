@@ -3,73 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Мастерская Циркуля</title>
+<title>Circul Hub — Мастерская Циркуля</title>
 <script src="https://telegram.org"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
-  body{background:#eef4fc;background-image:linear-gradient(to right,rgba(37,99,235,.14) 1px,transparent 1px),linear-gradient(to bottom,rgba(37,99,235,.14) 1px,transparent 1px);background-size:20px 20px;font-family:-apple-system,sans-serif;color:#1e293b;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-  #header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#fff;border-bottom:2px solid #bfdbfe}
-  .m-wrap{display:flex;align-items:center;gap:8px}
-  #mascot{width:46px;height:46px;border-radius:12px;background:#dbeafe;border:2px solid #3b82f6;image-rendering:pixelated}
-  #speech{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:5px 8px;font-size:11px;font-weight:700;color:#1d4ed8;max-width:175px;line-height:1.2}
-  .pts{background:#1e3a8a;color:#fff;padding:6px 10px;border-radius:10px;font-size:12px;font-weight:800;text-align:right}
-  #mp-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#dbeafe;border-bottom:1px solid #93c5fd;font-size:11px;font-weight:800}
-  .mp-b{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:5px 9px;font-size:11px;font-weight:800}
-  #menu{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-  .card{background:#fff;border:2px solid #93c5fd;border-radius:14px;padding:11px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
-  .card:active{background:#dbeafe;transform:scale(.97)}
-  #play{display:none;flex:1;flex-direction:column}
-  #g-top{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-bottom:1px solid #bfdbfe}
-  #c-wrap{position:relative;flex:1;width:100%;overflow:hidden}
-  #gc{display:block;width:100%;height:100%}
-  #board{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px;gap:10px;text-align:center}
-  #ctrls{padding:12px 14px 18px;background:#fff;border-top:2px solid #bfdbfe}
-  .btn{width:100%;padding:15px;font-size:16px;font-weight:900;background:#2563eb;color:#fff;border:none;border-radius:12px}
-  .btn.stop{background:#ef4444} .btn.win{background:#10b981}
-  .g-grid{display:grid;grid-template-columns:repeat(3,74px);gap:6px}
-  .cell{height:74px;background:#fff;border:2px solid #3b82f6;border-radius:10px;font-size:22px;font-weight:900;color:#1e3a8a}
-  #modal{position:fixed;inset:0;background:rgba(15,23,42,.88);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
-  .m-card{background:#fff;border-radius:16px;padding:18px;width:100%;max-width:320px;text-align:center;display:flex;flex-direction:column;gap:10px}
-  .m-card input{padding:11px;border:2px solid #93c5fd;border-radius:10px;font-size:16px;font-weight:800;text-align:center;text-transform:uppercase}
+  body{background:#0b0d13;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  #top-hud{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(19,23,34,.95);border-bottom:1px solid #1e293b;z-index:20}
+  .user-pill{display:flex;align-items:center;gap:8px;background:#161b28;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid #28324a}
+  #mascot{width:34px;height:34px;border-radius:50%;background:#1e3a8a;border:1.5px solid #38bdf8;image-rendering:pixelated}
+  .u-name{font-size:13px;font-weight:800;color:#fff}
+  .u-rank{font-size:10px;font-weight:800;color:#f59e0b;letter-spacing:.5px}
+  .bal-pill{display:flex;align-items:center;gap:6px;background:#161b28;padding:6px 12px;border-radius:16px;border:1px solid #28324a;font-size:14px;font-weight:900;color:#38bdf8}
+  #online-bar{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:#111520;border-bottom:1px solid #1e293b;font-size:11px;font-weight:700;color:#94a3b8}
+  .dot-live{display:inline-block;width:7px;height:7px;background:#10b981;border-radius:50%;margin-right:4px;box-shadow:0 0 8px #10b981}
+  .mp-mini{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:4px 8px;font-size:10px;font-weight:800}
+  #main-scroll{flex:1;overflow-y:auto;padding:12px 12px 80px;display:flex;flex-direction:column;gap:12px}
+  .hero-pvp{background:linear-gradient(135deg,#3b1d36 0%,#1a1d2e 60%,#111827 100%);border:1px solid #ec4899;border-radius:18px;padding:16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 24px rgba(236,72,153,.15)}
+  .hero-pvp h2{font-size:20px;font-weight:900;color:#fff;margin-bottom:4px}
+  .hero-pvp p{font-size:12px;color:#cbd5e1;margin-bottom:12px}
+  .pink-btn{background:linear-gradient(90deg,#ec4899,#f43f5e);color:#fff;border:none;border-radius:12px;padding:9px 22px;font-size:13px;font-weight:800;box-shadow:0 4px 12px rgba(244,63,94,.4)}
+  .cards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .g-card{background:linear-gradient(160deg,#1a2030 0%,#121622 100%);border:1px solid #263046;border-radius:18px;padding:14px 12px;display:flex;flex-direction:column;justify-content:space-between;min-height:132px;position:relative;overflow:hidden}
+  .g-card:active{transform:scale(.97);border-color:#38bdf8}
+  .g-badge{position:absolute;top:10px;right:10px;background:rgba(16,185,129,.15);border:1px solid #10b981;color:#34d399;font-size:10px;font-weight:800;padding:2px 6px;border-radius:8px}
+  .g-ico{font-size:34px;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+  .g-t{font-size:15px;font-weight:900;color:#fff;margin-bottom:3px}
+  .g-d{font-size:11px;color:#94a3b8;line-height:1.25}
+  .sec-box{background:#151926;border:1px solid #263046;border-radius:18px;padding:14px}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;margin:10px 0}
+  .st-item{background:#0f131d;padding:8px 4px;border-radius:12px;border:1px solid #1e293b}
+  .st-item b{display:block;font-size:14px;color:#38bdf8} .st-item span{font-size:9px;color:#64748b;font-weight:800}
+  .bronze-card{background:linear-gradient(135deg,#9a6b43 0%,#5c3a21 100%);border-radius:18px;padding:16px;color:#fff;position:relative;overflow:hidden;border:1px solid #d99b66}
+  .prog-bar{height:8px;background:#0f131d;border-radius:4px;overflow:hidden;margin-top:8px}
+  .prog-fill{height:100%;background:linear-gradient(90deg,#38bdf8,#818cf8);width:35%}
+  #bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(15,18,27,.97);border-top:1px solid #1e293b;display:flex;justify-content:space-around;padding:8px 4px 12px;z-index:30}
+  .nav-it{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#64748b;background:none;border:none}
+  .nav-it.act{color:#38bdf8} .nav-it span{font-size:18px}
+  #game-overlay{position:fixed;inset:0;background:#0b0d13;z-index:40;display:none;flex-direction:column}
+  #ov-top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#131722;border-bottom:1px solid #1e293b}
+  #ov-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;position:relative}
+  #ov-ctrls{padding:14px;background:#131722;border-top:1px solid #1e293b;display:flex;flex-direction:column;gap:8px}
+  .stake-row{display:flex;gap:6px;justify-content:center}
+  .stk-btn{background:#1e293b;color:#cbd5e1;border:1px solid #334155;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800}
+  .stk-btn.act{background:#2563eb;color:#fff;border-color:#60a5fa}
+  .act-btn{width:100%;padding:15px;border-radius:14px;border:none;font-size:16px;font-weight:900;color:#fff;background:linear-gradient(90deg,#2563eb,#3b82f6)}
+  .act-btn.stop{background:linear-gradient(90deg,#ef4444,#f43f5e)} .act-btn.win{background:linear-gradient(90deg,#10b981,#059669)}
+  .mine-grid{display:grid;grid-template-columns:repeat(4,64px);gap:8px}
+  .m-cell{height:64px;background:#1e293b;border:1.5px solid #334155;border-radius:12px;font-size:22px;font-weight:900;color:#fff}
 </style>
 </head>
 <body>
-<div id="header">
-  <div class="m-wrap"><canvas id="mascot" width="32" height="32"></canvas><div id="speech">Выбирай игру или зови друга!</div></div>
-  <div class="pts">ОЧКИ<br><span id="pts">0</span></div>
+<div id="top-hud">
+  <div class="user-pill">
+    <canvas id="mascot" width="32" height="32"></canvas>
+    <div><div class="u-name" id="u-name">Circul</div><div class="u-rank" id="u-rank">● BRONZE</div></div>
+  </div>
+  <div class="bal-pill">💎 <span id="bal">1000</span></div>
 </div>
-<div id="mp-bar">
-  <span id="mp-st">Одиночный режим</span>
-  <div><button class="mp-b" id="b-hs">👥 1 на 1</button> <button class="mp-b" style="background:#0f172a" id="b-on">🌐 Комната</button></div>
+<div id="online-bar">
+  <div><span class="dot-live"></span>Онлайн: <b style="color:#10b981">29</b> · <span id="mp-lbl">Соло</span></div>
+  <div style="display:flex;gap:5px">
+    <button class="mp-mini" id="btn-1v1">👥 1 на 1</button>
+    <button class="mp-mini" id="btn-room">🌐 Комната</button>
+  </div>
 </div>
-<div id="menu"></div>
-<div id="play">
-  <div id="g-top"><button class="mp-b" style="background:#64748b" id="b-back">← Меню</button><b id="g-title">Игра</b><b id="turn" style="color:#dc2626;font-size:12px"></b></div>
-  <div id="c-wrap"><canvas id="gc"></canvas><div id="board"></div></div>
-  <div id="ctrls"><button class="btn" id="m-btn">СТАРТ</button></div>
+<div id="main-scroll"></div>
+<div id="bottom-nav">
+  <button class="nav-it" data-tab="clans"><span>🛡️</span>Кланы</button>
+  <button class="nav-it act" data-tab="games"><span>🎮</span>Игры</button>
+  <button class="nav-it" data-tab="tour"><span>🏆</span>Турнир</button>
+  <button class="nav-it" data-tab="hunt"><span>🎡</span>Охота</button>
+  <button class="nav-it" data-tab="shop"><span>🛍️</span>Магазин</button>
+  <button class="nav-it" data-tab="prof"><span>👤</span>Профиль</button>
 </div>
-<div id="modal"><div class="m-card">
-  <h3>Онлайн-комната (1 на 1)</h3>
-  <input id="r-inp" maxlength="6" placeholder="КОД (напр. A7K9)">
-  <button class="mp-b" style="padding:12px" id="b-join">ВОЙТИ / СОЗДАТЬ</button>
-  <button class="mp-b" style="background:#64748b;padding:10px" id="b-solo">ОДИНОЧНЫЙ РЕЖИМ</button>
-  <button style="border:none;background:none;color:#64748b;font-weight:700" id="b-cls">Закрыть</button>
-</div></div>
+<div id="game-overlay">
+  <div id="ov-top">
+    <button class="mp-mini" id="ov-back">← Назад</button>
+    <b id="ov-title" style="font-size:15px">Игра</b>
+    <span style="font-size:12px;color:#38bdf8;font-weight:800">💎 <span id="ov-bal">1000</span></span>
+  </div>
+  <div id="ov-body"></div>
+  <div id="ov-ctrls">
+    <div class="stake-row" id="stake-row"></div>
+    <button class="act-btn" id="ov-btn">ИГРАТЬ</button>
+  </div>
+</div>
 <script>
-  if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.expand();
-  const mCtx = document.getElementById('mascot').getContext('2d'), speech = document.getElementById('speech');
-  function drawMascot(m) {
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.expand();
+    const u = window.Telegram.WebApp.initDataUnsafe?.user;
+    if (u && u.first_name) document.getElementById('u-name').innerText = u.first_name;
+  }
+
+  const mCtx = document.getElementById('mascot').getContext('2d');
+  function drawMascot(mood) {
     mCtx.clearRect(0,0,32,32);
     mCtx.fillStyle='#1d4ed8'; mCtx.fillRect(6,7,20,17); mCtx.fillRect(4,11,24,11);
     mCtx.fillStyle='#94a3b8'; mCtx.fillRect(19,2,6,2); mCtx.fillRect(18,4,2,4); mCtx.fillRect(24,4,2,4);
     mCtx.fillStyle='#fed7aa'; mCtx.fillRect(9,10,14,12);
     mCtx.fillStyle='#2563eb'; mCtx.fillRect(8,7,16,5); mCtx.fillRect(10,12,3,2); mCtx.fillRect(15,12,2,3); mCtx.fillRect(19,12,3,2);
     mCtx.fillStyle='#0284c7'; mCtx.fillRect(9,23,14,9); mCtx.fillStyle='#38bdf8'; mCtx.fillRect(12,24,8,8);
-    if (m==='happy') {
+    if (mood==='happy') {
       mCtx.fillStyle='#0f172a'; mCtx.fillRect(11,14,3,4); mCtx.fillRect(18,14,3,4);
       mCtx.fillStyle='#38bdf8'; mCtx.fillRect(11,16,3,2); mCtx.fillRect(18,16,3,2);
       mCtx.fillStyle='#f43f5e'; mCtx.fillRect(14,19,4,2);
-    } else if (m==='sad') {
+    } else if (mood==='sad') {
       mCtx.fillStyle='#0f172a'; mCtx.fillRect(10,15,4,1); mCtx.fillRect(18,15,4,1);
       mCtx.fillStyle='#38bdf8'; mCtx.fillRect(9,16,2,4); mCtx.fillRect(21,16,2,4);
       mCtx.fillStyle='#e11d48'; mCtx.fillRect(14,19,4,2);
@@ -78,211 +116,324 @@
       mCtx.fillStyle='#f43f5e'; mCtx.fillRect(15,19,2,1); mCtx.fillStyle='#fff'; mCtx.fillRect(14,21,4,3);
     }
   }
-  function say(m, t) { drawMascot(m); speech.innerText = t; }
-  drawMascot('think');
+  drawMascot('happy');
 
-  let pts = Number(localStorage.getItem('c20_pts') || 0);
-  const ptsEl = document.getElementById('pts'); ptsEl.innerText = pts;
-  function addPts(n) { pts = Math.max(0, pts + n); ptsEl.innerText = pts; localStorage.setItem('c20_pts', pts); }
+  let state = JSON.parse(localStorage.getItem('circul_hub_v1') || '{"bal":1000,"games":0,"wins":0,"inv":[]}');
+  let stake = 50, mpMode = 'solo', curP = 1, p1S = 0, p2S = 0, roomCode = '';
+  const scroll = document.getElementById('main-scroll');
 
-  let mp = 'solo', curP = 1, s1 = 0, s2 = 0, room = '';
-  const mpSt = document.getElementById('mp-st'), turnEl = document.getElementById('turn');
-  function updMp() {
-    if (mp==='solo') { mpSt.innerText = 'Одиночный режим'; turnEl.innerText = ''; }
-    else if (mp==='hs') { mpSt.innerText = '1 на 1: И1 ('+s1+') : И2 ('+s2+')'; turnEl.innerText = 'Ход И'+curP; }
-    else { mpSt.innerText = 'Комната '+room+': Вы ('+s1+') : Враг ('+s2+')'; turnEl.innerText = room; }
+  function saveState() {
+    localStorage.setItem('circul_hub_v1', JSON.stringify(state));
+    document.getElementById('bal').innerText = Math.floor(state.bal);
+    document.getElementById('ov-bal').innerText = Math.floor(state.bal);
+    const rk = state.bal >= 10000 ? '● DIAMOND' : (state.bal >= 3000 ? '● SILVER' : '● BRONZE');
+    document.getElementById('u-rank').innerText = rk;
   }
-  document.getElementById('b-hs').onclick = () => { mp = mp==='hs'?'solo':'hs'; curP=1; s1=0; s2=0; updMp(); say('happy', mp==='hs'?'Играем вдвоем на 1 экране!':'Одиночный режим.'); };
-  document.getElementById('b-on').onclick = () => document.getElementById('modal').style.display='flex';
-  document.getElementById('b-cls').onclick = () => document.getElementById('modal').style.display='none';
-  document.getElementById('b-solo').onclick = () => { mp='solo'; updMp(); document.getElementById('modal').style.display='none'; };
-  document.getElementById('b-join').onclick = () => {
-    room = document.getElementById('r-inp').value.trim().toUpperCase() || Math.random().toString(36).substring(2,6).toUpperCase();
-    mp='on'; s1=0; s2=0; updMp(); document.getElementById('modal').style.display='none';
-    say('happy', 'Код комнаты: '+room+'. Отправь другу!');
+  saveState();
+
+  function addScore(delta, isWin) {
+    state.games++;
+    if (isWin) { state.wins++; drawMascot('happy'); } else drawMascot('sad');
+    if (mpMode === 'solo') {
+      state.bal = Math.max(0, state.bal + delta);
+    } else if (mpMode === '1v1') {
+      if (curP === 1) { if (delta > 0) p1S += delta; curP = 2; }
+      else { if (delta > 0) p2S += delta; curP = 1; }
+      updMpLabel();
+    } else {
+      state.bal = Math.max(0, state.bal + delta);
+      if (delta > 0) p1S += delta;
+      updMpLabel();
+    }
+    if (state.bal < 10) state.bal = 100;
+    saveState();
+  }
+
+  function updMpLabel() {
+    const el = document.getElementById('mp-lbl');
+    if (mpMode === 'solo') el.innerText = 'Соло';
+    else if (mpMode === '1v1') el.innerText = '1v1 ('+p1S+':'+p2S+') Ход И'+curP;
+    else el.innerText = 'Комната '+roomCode+' ('+p1S+' 💎)';
+  }
+
+  document.getElementById('btn-1v1').onclick = () => {
+    mpMode = mpMode === '1v1' ? 'solo' : '1v1';
+    curP = 1; p1S = 0; p2S = 0; updMpLabel();
   };
-  function winPts(p) {
-    if (mp==='solo') addPts(p);
-    else if (mp==='hs') { if(curP===1){s1+=p;curP=2;}else{s2+=p;curP=1;} updMp(); }
-    else { s1+=p; addPts(p); updMp(); }
-  }
-  const menu = document.getElementById('menu'), play = document.getElementById('play');
-  const gc = document.getElementById('gc'), ctx = gc.getContext('2d'), board = document.getElementById('board');
-  const mBtn = document.getElementById('m-btn'), gTitle = document.getElementById('g-title');
-  let cur = 0, st = 'idle', raf, t0 = 0, v1 = 0, v2 = 0, dir = 1, arr = new Array();
+  document.getElementById('btn-room').onclick = () => {
+    const code = prompt('Введите код комнаты (или оставьте пустым для нового):', roomCode);
+    if (code === null) return;
+    roomCode = code.trim().toUpperCase() || Math.random().toString(36).substring(2,6).toUpperCase();
+    mpMode = 'room'; p1S = 0; p2S = 0; updMpLabel();
+    alert('Комната ' + roomCode + ' создана! Отправьте код другу.');
+  };
 
-  const G_LIST = '🚀|Полет по дуге|Тайминг;⚔️|Дуэль PvP|Угол 1v1;🎯|Идеальный круг|Радиус;📍|Шаг циркуля|Точность;📏|Баланс линейки|Центр;📐|Угол на глаз|Глазомер;⚡|Реакция иглы|Скорость;🌀|Врата спирали|Ритм;✂️|Отрезок 50%|Деление;🔢|Сумма углов|Счет;👁️|Лишняя фигура|Внимание;🧠|Память сетки|Память;❌|Крестики-нолики|Логика;💣|Кляксы-сапер|Риск;🎲|Больше-меньше|Интуиция;⏱️|Ровно 3.00 сек|Время;🧲|Сжатие кольца|Реакция;🔺|Тип угла|Геометрия;🎨|Тест грифеля|Мозг;🏆|Блиц 20 кликов|Спринт'.split(';');
-
-  G_LIST.forEach((raw, i) => {
-    const p = raw.split('|');
-    const d = document.createElement('div'); d.className = 'card';
-    d.innerHTML = '<div style="font-size:22px">'+p.at(0)+'</div><b style="font-size:12px;color:#1e3a8a">'+(i+1)+'. '+p.at(1)+'</b><span style="font-size:10px;color:#64748b;font-weight:700">'+p.at(2)+'</span>';
-    d.onclick = () => openG(i); menu.appendChild(d);
+  document.querySelectorAll('.nav-it').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.nav-it').forEach(b => b.classList.remove('act'));
+      btn.classList.add('act');
+      renderTab(btn.dataset.tab);
+    };
   });
+  function renderTab(tab) {
+    if (tab === 'games') {
+      scroll.innerHTML = `
+        <div class="hero-pvp" onclick="launchGame('pvp')">
+          <div>
+            <h2>PvP Дуэль</h2>
+            <p>4 режима против игроков и маскота</p>
+            <button class="pink-btn">Играть</button>
+          </div>
+          <div style="font-size:52px">🧭</div>
+        </div>
+        <div class="cards-grid">
+          <div class="g-card" onclick="launchGame('crash')">
+            <span class="g-badge">● 4</span>
+            <div class="g-ico">🚀</div>
+            <div><div class="g-t">Crash Дуга</div><div class="g-d">Забери множитель до поломки грифеля</div></div>
+          </div>
+          <div class="g-card" onclick="launchGame('risk')">
+            <span class="g-badge">● 1</span>
+            <div class="g-ico">⚡</div>
+            <div><div class="g-t">Risk Bar</div><div class="g-d">Останови луч на множителе до 5x</div></div>
+          </div>
+          <div class="g-card" onclick="launchGame('lucky')">
+            <span class="g-badge">x10</span>
+            <div class="g-ico">🎡</div>
+            <div><div class="g-t">Lucky Круг</div><div class="g-d">Транспортир с секторами x2 и x10</div></div>
+          </div>
+          <div class="g-card" onclick="launchGame('mines')">
+            <span class="g-badge">● 3</span>
+            <div class="g-ico">💣</div>
+            <div><div class="g-t">Mines Сетка</div><div class="g-d">Открывай клетки, обходи чернильные кляксы</div></div>
+          </div>
+          <div class="g-card" onclick="launchGame('upgrade')">
+            <span class="g-badge">UP</span>
+            <div class="g-ico">📐</div>
+            <div><div class="g-t">Upgrade</div><div class="g-d">Прокачай чертеж на множитель очков</div></div>
+          </div>
+          <div class="g-card" onclick="launchGame('slots')">
+            <span class="g-badge">3x3</span>
+            <div class="g-ico">🎰</div>
+            <div><div class="g-t">Слоты Циркуля</div><div class="g-d">Три инструмента в ряд — бонус очков</div></div>
+          </div>
+          <div class="g-card" onclick="launchGame('claw')">
+            <span class="g-badge">NEW</span>
+            <div class="g-ico">🦾</div>
+            <div><div class="g-t">Кран-Циркуль</div><div class="g-d">Вытащи редкий артефакт клешней</div></div>
+          </div>
+          <div class="g-card" onclick="launchGame('cases')">
+            <span class="g-badge">● 4</span>
+            <div class="g-ico">🧰</div>
+            <div><div class="g-t">Кейсы Мастера</div><div class="g-d">Открывай футляры и собирай коллекцию</div></div>
+          </div>
+        </div>`;
+    } else if (tab === 'prof') {
+      const wr = state.games ? Math.round((state.wins / state.games) * 100) : 0;
+      const pct = Math.min(100, Math.round((state.bal / 3000) * 100));
+      scroll.innerHTML = `
+        <div class="stat-row">
+          <div class="st-item"><b>${state.games}</b><span>ИГР</span></div>
+          <div class="st-item"><b>${state.wins}</b><span>ПОБЕД</span></div>
+          <div class="st-item"><b>${wr}%</b><span>ВИНРЕЙТ</span></div>
+          <div class="st-item"><b>${Math.floor(state.bal)}</b><span>ОЧКИ</span></div>
+        </div>
+        <div class="bronze-card">
+          <div style="font-size:12px;opacity:.85">Мастерская Циркуля · Bronze</div>
+          <div style="font-size:28px;font-weight:900;margin:8px 0">💎 ${Math.floor(state.bal)}</div>
+          <div style="font-size:11px;opacity:.9">CIRCUL-MASTER · Игровой баланс</div>
+        </div>
+        <div class="sec-box">
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800"><span>До Silver</span><span>${Math.floor(state.bal)} / 3000 💎</span></div>
+          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+          <button class="act-btn" style="margin-top:12px;padding:11px;font-size:13px" onclick="claimBonus()">🎁 Забрать ежедневный бонус (+250 💎)</button>
+        </div>
+        <div class="sec-box">
+          <b style="font-size:13px">Инвентарь (${state.inv.length})</b>
+          <div style="font-size:12px;color:#94a3b8;margin-top:6px">${state.inv.length ? state.inv.join(' · ') : 'Пока пусто — открывай кейсы или загляни в Магазин!'}</div>
+        </div>`;
+    } else if (tab === 'shop') {
+      const items = 'Золотой циркуль|500|🧭,Лазерный рейсфедер|1200|🖊️,Неоновый транспортир|2500|📐,Корона Архитектора|5000|👑,Хрустальный грифель|800|💎,Чертеж Легенды|1800|📜'.split(',');
+      scroll.innerHTML = `<b style="font-size:16px">Магазин артефактов</b><div class="cards-grid">` +
+        items.map(raw => {
+          const p = raw.split('|'), owned = state.inv.includes(p.at(0));
+          return `<div class="g-card" style="text-align:center;align-items:center">
+            <div class="g-ico">${p.at(2)}</div>
+            <div class="g-t">${p.at(0)}</div>
+            <button class="pink-btn" style="width:100%;margin-top:8px;background:${owned?'#10b981':''}" onclick="buyItem('${p.at(0)}',${p.at(1)})">${owned?'В инвентаре ✓':'💎 '+p.at(1)}</button>
+          </div>`;
+        }).join('') + `</div>`;
+    } else if (tab === 'clans') {
+      scroll.innerHTML = `
+        <div class="sec-box" style="text-align:center">
+          <div style="font-size:36px">🛡️</div>
+          <h3 style="margin:6px 0">Кланы недели</h3>
+          <p style="font-size:12px;color:#94a3b8">Фонд сезона: 20 000 💎</p>
+        </div>
+        <div class="sec-box">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e293b"><b>🥇 Circul Masters</b><span style="color:#38bdf8;font-weight:800">5 920 💎</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e293b"><b>🥈 Duck Engineers</b><span style="color:#94a3b8;font-weight:800">2 720 💎</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0"><b>🥉 Gift Caps</b><span style="color:#94a3b8;font-weight:800">1 640 💎</span></div>
+        </div>`;
+    } else if (tab === 'tour') {
+      scroll.innerHTML = `
+        <div class="sec-box" style="text-align:center">
+          <div style="font-size:36px">🏆</div>
+          <h3 style="margin:6px 0">PvP Турнир Архитекторов</h3>
+          <p style="font-size:12px;color:#94a3b8">Набирай очки в дуэлях и поднимайся в топ</p>
+        </div>
+        <div class="sec-box">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e293b"><b>#1 @giftttyt</b><span style="color:#f59e0b;font-weight:800">7 616 💎</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e293b"><b>#2 @Twwlev</b><span style="color:#cbd5e1;font-weight:800">2 668 💎</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0"><b>#3 Вы (${document.getElementById('u-name').innerText})</b><span style="color:#38bdf8;font-weight:800">${Math.floor(state.bal)} 💎</span></div>
+        </div>`;
+    } else if (tab === 'hunt') {
+      scroll.innerHTML = `
+        <div class="sec-box" style="text-align:center">
+          <div style="font-size:48px;margin:10px 0">🎯</div>
+          <h3>Охота за Редким Циркулем</h3>
+          <p style="font-size:12px;color:#94a3b8;margin:8px 0 14px">Испытай удачу в секторе транспортира за 100 💎</p>
+          <button class="pink-btn" style="width:100%;padding:14px" onclick="launchGame('lucky')">Крутить колесо охоты</button>
+        </div>`;
+    }
+  }
 
-  document.getElementById('b-back').onclick = () => {
-    cancelAnimationFrame(raf); st = 'idle'; play.style.display = 'none'; menu.style.display = 'grid';
-    say('think', 'Выбирай следующую игру!');
+  window.claimBonus = () => { state.bal += 250; saveState(); renderTab('prof'); alert('Начислено +250 💎!'); };
+  window.buyItem = (name, cost) => {
+    if (state.inv.includes(name)) return;
+    if (state.bal < cost) return alert('Недостаточно 💎 очков! Поиграй в мини-игры.');
+    state.bal -= cost; state.inv.push(name); saveState(); renderTab('shop');
   };
-  function openG(i) {
-    cur = i; menu.style.display = 'none'; play.style.display = 'flex';
-    gTitle.innerText = G_LIST.at(i).split('|').at(1);
-    gc.width = gc.parentElement.clientWidth; gc.height = gc.parentElement.clientHeight;
-    initG();
-  }
-  function setBtn(t, c='') { mBtn.innerText = t; mBtn.className = 'btn ' + c; mBtn.style.display = 'block'; }
-  function showB(h) { gc.style.display = 'none'; board.style.display = 'flex'; board.innerHTML = h; mBtn.style.display = 'none'; }
-  function showC() { board.style.display = 'none'; gc.style.display = 'block'; }
-
-  function initG() {
-    cancelAnimationFrame(raf); st = 'idle'; showC(); setBtn('СТАРТ');
-    const g = cur;
-    if (g===0) { v1=1; v2=+(1.4+Math.random()*3.5).toFixed(2); arr=new Array(); say('think','Зафиксируй дугу до поломки!'); }
-    else if (g===1) { v1=Math.floor(30+Math.random()*300); v2=0; say('think','Останови ближе к '+v1+'°!'); }
-    else if (g===2) { v1=Math.floor(60+Math.random()*65); v2=20; dir=1; say('think','Попади в зеленое кольцо!'); }
-    else if (g===3 || g===7) { v1=-Math.PI/2; v2=-Math.PI/4; say('think','Нажми точно в верхней точке!'); }
-    else if (g===4 || g===8) { v1=0.1; dir=1; say('think','Останови ползунок ровно по центру!'); }
-    else if (g===5) {
-      const angs = '30,45,60,90,120,135,150'.split(',').map(Number);
-      v1 = angs.at(Math.floor(Math.random()*7));
-      const opts = new Array(v1, (v1+30)%180||45, (v1+60)%180||90).sort(()=>Math.random()-0.5);
-      showB('<b>Определи угол ('+v1+'° на глаз):</b>' + opts.map(o=>'<button class="btn" style="width:200px" onclick="ansQ('+(o===v1)+')">'+o+'°</button>').join(''));
-    }
-    else if (g===6) { v1=0; say('think','Жми СТАРТ, затем жди зеленый цвет!'); }
-    else if (g===9) {
-      const a=Math.floor(30+Math.random()*50), b=Math.floor(30+Math.random()*50), c=180-a-b;
-      const opts=new Array(c, c+10, c-10).sort(()=>Math.random()-0.5);
-      showB('<b>Треугольник: '+a+'° + '+b+'° + ? = 180°</b>' + opts.map(o=>'<button class="btn" style="width:200px" onclick="ansQ('+(o===c)+')">'+o+'°</button>').join(''));
-    }
-    else if (g===10) {
-      const bad = Math.floor(Math.random()*9); let h = '<div class="g-grid">';
-      for(let i=0;i<9;i++) h += '<button class="cell" onclick="ansQ('+(i===bad)+')">'+(i===bad?'📐':'📏')+'</button>';
-      showB(h+'</div>'); say('think','Найди лишний инструмент!');
-    }
-    else if (g===11) {
-      arr = '0,1,2,3,4,5,6,7,8'.split(',').map(Number).sort(()=>Math.random()-0.5).slice(0,3); v1=0;
-      renMem(true); say('think','Запомни синие клетки!');
-      setTimeout(()=>{ renMem(false); say('think','Открой все 3 клетки!'); }, 1700);
-    }
-    else if (g===12) { arr=new Array(9).fill(''); renTTT(); say('think','Твой ход (X)!'); }
-    else if (g===13) { arr='0,1,2,3,4,5,6,7,8'.split(',').map(Number).sort(()=>Math.random()-0.5).slice(0,2); v1=0; renMine(); say('think','Открой 4 клетки без клякс!'); }
-    else if (g===14) {
-      v1=Math.floor(20+Math.random()*60); v2=Math.floor(15+Math.random()*70);
-      showB('<b>Радиус сейчас: '+v1+' мм<br>Следующий будет...</b><button class="btn win" style="width:210px" onclick="ansQ('+(v2>=v1)+')">БОЛЬШЕ ⬆️</button><button class="btn stop" style="width:210px" onclick="ansQ('+(v2<v1)+')">МЕНЬШЕ ⬇️</button>');
-    }
-    else if (g===15) { v1=0; say('think','Останови таймер ровно на 3.00 сек!'); }
-    else if (g===16) { v1=130; say('think','Останови кольцо в синей зоне!'); }
-    else if (g===17) {
-      const degs = '35,90,145'.split(',').map(Number);
-      const deg = degs.at(Math.floor(Math.random()*3));
-      const ans = deg<90?'Острый':(deg===90?'Прямой':'Тупой');
-      showB('<b>Угол равен '+deg+'°. Какой он?</b>' + 'Острый,Прямой,Тупой'.split(',').map(x=>'<button class="btn" style="width:210px" onclick="ansQ(\''+x+'\'===\''+ans+'\')">'+x+'</button>').join(''));
-    }
-    else if (g===18) {
-      const names = 'СИНИЙ,КРАСНЫЙ,ЗЕЛЕНЫЙ'.split(','), hex = '#2563eb,#ef4444,#10b981'.split(',');
-      const wi = Math.floor(Math.random()*3), ci = Math.floor(Math.random()*3);
-      showB('<span>Нажми на ЦВЕТ букв:</span><b style="font-size:30px;color:'+hex.at(ci)+'">'+names.at(wi)+'</b>' + names.map((x,idx)=>'<button class="btn" style="width:210px" onclick="ansQ('+(idx===ci)+')">'+x+'</button>').join(''));
-    }
-    else if (g===19) { v1=0; t0=0; setBtn('ЖМИ БЫСТРО (0 / 20)'); say('think','Сделай 20 кликов на скорость!'); }
-    loop();
-  }
-  window.ansQ = (ok) => {
-    if (ok) { winPts(20); say('happy','Верно! +20 очков!'); } else say('sad','Ошибка! Попробуй еще.');
-    setTimeout(initG, 850);
-  };
-  function renMem(show) {
-    let h = '<div class="g-grid">';
-    for(let i=0;i<9;i++) { const l = show && arr.includes(i); h += '<button class="cell" style="background:'+(l?'#3b82f6':'#fff')+'" onclick="pMem('+i+',this)">'+(l?'★':'')+'</button>'; }
-    showB(h+'</div>');
-  }
-  window.pMem = (i, el) => {
-    if (arr.includes(i)) { el.style.background='#10b981'; el.innerText='✓'; v1++; if(v1===3){ winPts(25); say('happy','Отличная память! +25!'); setTimeout(initG,850); } }
-    else { el.style.background='#ef4444'; say('sad','Не та клетка!'); setTimeout(initG,850); }
-  };
-  function renTTT() {
-    let h = '<div class="g-grid">'; arr.forEach((v,i)=> h += '<button class="cell" onclick="mTTT('+i+')">'+v+'</button>'); showB(h+'</div>');
-  }
-  window.mTTT = (i) => {
-    if (arr.at(i)) return; arr.splice(i, 1, 'X');
-    if (chkTTT('X')) { renTTT(); winPts(30); say('happy','Победа! +30!'); setTimeout(initG,950); return; }
-    const emp = arr.map((v,idx)=>v===''?idx:-1).filter(x=>x>=0);
-    if (!emp.length) { renTTT(); say('think','Ничья!'); setTimeout(initG,950); return; }
-    arr.splice(emp.at(Math.floor(Math.random()*emp.length)), 1, 'O'); renTTT();
-    if (chkTTT('O')) { say('sad','Маскот победил!'); setTimeout(initG,950); }
-  };
-  function chkTTT(p) {
-    return '0-1-2,3-4-5,6-7-8,0-3-6,1-4-7,2-5-8,0-4-8,2-4-6'.split(',').some(line => line.split('-').map(Number).every(i => arr.at(i) === p));
-  }
-  function renMine() {
-    let h = '<div class="g-grid">'; for(let i=0;i<9;i++) h += '<button class="cell" onclick="sMine('+i+',this)">?</button>'; showB(h+'</div>');
-  }
-  window.sMine = (i, el) => {
-    if (arr.includes(i)) { el.style.background='#ef4444'; el.innerText='💧'; say('sad','Клякса! Чертеж испорчен.'); setTimeout(initG,850); }
-    else if (el.innerText==='?') { el.style.background='#10b981'; el.innerText='✓'; v1++; if(v1===4){ winPts(25); say('happy','Чисто! +25!'); setTimeout(initG,850); } }
+  renderTab('games');
+  window.launchGame = (mode) => {
+    curMode = mode; gState = 'idle'; cancelAnimationFrame(raf);
+    ov.style.display = 'flex'; renderStakes();
+    ovBtn.className = 'act-btn'; ovBtn.innerText = 'ЗАПУСТИТЬ (💎 ' + stake + ')';
+    const names = { pvp:'PvP Дуэль 1 на 1', cases:'Кейс Мастера', crash:'Полет Иглы', risk:'Risk Bar', mines:'Кляксы на сетке', upgrade:'Апгрейд Инструмента', slots:'Слоты Геометрии', lucky:'Колесо Удачи', avalanche:'Перевал Чертежа' };
+    document.getElementById('ov-title').innerText = names[mode] || 'Игра';
+    setupMode();
   };
 
-  mBtn.onclick = () => {
-    const g = cur;
-    if (g===19) {
-      if (!t0) t0 = performance.now(); v1++; setBtn('ЖМИ БЫСТРО ('+v1+' / 20)');
-      if (v1>=20) { const s=((performance.now()-t0)/1000).toFixed(2); winPts(25); say('happy','20 кликов за '+s+'с! +25!'); setTimeout(initG,1100); }
-      return;
+  function setupMode() {
+    if (curMode === 'crash' || curMode === 'risk' || curMode === 'pvp' || curMode === 'avalanche') {
+      ovBody.innerHTML = `<canvas id="g-cvs" width="320" height="270" style="background:#131722;border-radius:18px;border:1px solid #263046"></canvas><div id="g-info" style="margin-top:12px;font-size:14px;font-weight:800;color:#94a3b8">Нажми кнопку ниже для старта</div>`;
+    } else if (curMode === 'mines') {
+      ovBody.innerHTML = `<div class="mine-grid" id="m-grid"></div><div id="g-info" style="margin-top:14px;font-size:14px;font-weight:800;color:#38bdf8">Открывай клетки и забирай награду</div>`;
+      const mg = document.getElementById('m-grid');
+      for (let i = 0; i < 16; i++) mg.innerHTML += `<button class="m-cell" onclick="clickMine(${i},this)">?</button>`;
+    } else if (curMode === 'slots') {
+      ovBody.innerHTML = `<div style="display:flex;gap:14px;font-size:48px;background:#131722;padding:24px;border-radius:20px;border:2px solid #3b82f6"><span id="sl1">🧭</span><span id="sl2">📐</span><span id="sl3">📏</span></div><div id="g-info" style="margin-top:14px;font-size:14px;font-weight:800;color:#94a3b8">Собери 2 или 3 одинаковых знака!</div>`;
+    } else if (curMode === 'upgrade') {
+      ovBody.innerHTML = `<div style="font-size:64px">🪔</div><div id="g-info" style="margin-top:14px;font-size:15px;font-weight:800;color:#f59e0b">Шанс успеха: 45% → Множитель x2.2</div>`;
+    } else {
+      ovBody.innerHTML = `<div id="c-box" style="font-size:80px;transition:transform .3s">🧰</div><div id="g-info" style="margin-top:14px;font-size:15px;font-weight:800;color:#e2e8f0">Открой чертежный футляр или колесо!</div>`;
     }
-    if (st==='idle') {
-      st='run'; setBtn('СТОП!','stop');
-      if (g===6) { t0=performance.now()+1200+Math.random()*2000; setBtn('ЖДИ ЗЕЛЕНЫЙ...','stop'); }
-      if (g===15) t0=performance.now();
-    } else if (st==='run') {
-      st='end';
-      if (g===0) { const p=Math.round(v1*15); winPts(p); setBtn('ЕЩЁ РАЗ','win'); say('happy','x'+v1.toFixed(2)+' (+'+p+' очков)!'); }
-      else if (g===1) {
-        const pD=Math.round(((v2*180/Math.PI)%360+360)%360), bD=(v1+Math.floor(Math.random()*36)-18+360)%360;
-        const dp=Math.min(Math.abs(pD-v1),360-Math.abs(pD-v1)), db=Math.min(Math.abs(bD-v1),360-Math.abs(bD-v1));
-        if (dp<=db) { winPts(25); setBtn('ПОБЕДА!','win'); say('happy','Ты:'+pD+'°, Враг:'+bD+'° (+25)!'); }
-        else { setBtn('ЗАНОВО'); say('sad','Ты:'+pD+'°, Враг ближе:'+bD+'°'); }
+  }
+
+  window.clickMine = (idx, el) => {
+    if (gState !== 'run' || el.innerText !== '?') return;
+    if (mines.includes(idx)) {
+      el.style.background = '#ef4444'; el.innerText = '💧';
+      document.getElementById('g-info').innerText = 'Попалась чернильная клякса!';
+      finishRound(0, false, 'КЛЯКСА');
+    } else {
+      el.style.background = '#10b981'; el.innerText = '💎'; opened++;
+      val = +(1 + opened * 0.35).toFixed(2);
+      ovBtn.className = 'act-btn win'; ovBtn.innerText = 'ЗАБРАТЬ 💎 ' + Math.round(stake * val);
+      document.getElementById('g-info').innerText = 'Множитель: x' + val;
+    }
+  };
+
+  ovBtn.onclick = () => {
+    if (gState === 'idle') {
+      if (mpMode !== '1v1' && state.bal < stake) return alert('Не хватает 💎 очков!');
+      if (mpMode !== '1v1') { state.bal -= stake; saveState(); }
+      gState = 'run';
+
+      if (curMode === 'crash' || curMode === 'avalanche') {
+        val = 1.0; lim = +(1.25 + Math.random() * 3.8).toFixed(2);
+        ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ЗАБРАТЬ (x1.00)';
+        loopCanvas();
+      } else if (curMode === 'risk' || curMode === 'pvp') {
+        val = 0; lim = Math.floor(35 + Math.random() * 290);
+        ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ОСТАНОВИТЬ ИГЛУ!';
+        loopCanvas();
+      } else if (curMode === 'mines') {
+        setupMode(); opened = 0; val = 1.0;
+        mines = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'.split(',').map(Number).sort(()=>Math.random()-0.5).slice(0,3);
+        ovBtn.className = 'act-btn win'; ovBtn.innerText = 'ОТКРЫВАЙ КЛЕТКИ';
+      } else if (curMode === 'slots') {
+        const ic = '🧭,📐,📏,💎,🚀'.split(',');
+        const a = ic.at(Math.floor(Math.random()*5)), b = ic.at(Math.floor(Math.random()*5)), c = ic.at(Math.floor(Math.random()*5));
+        document.getElementById('sl1').innerText = a; document.getElementById('sl2').innerText = b; document.getElementById('sl3').innerText = c;
+        if (a===b && b===c) { const w = stake*5; document.getElementById('g-info').innerText = '3 В РЯД! +' + w + ' 💎'; finishRound(w, true, '+'+w+' 💎'); }
+        else if (a===b || b===c || a===c) { const w = Math.round(stake*1.7); document.getElementById('g-info').innerText = 'Пара! +' + w + ' 💎'; finishRound(w, true, '+'+w+' 💎'); }
+        else { document.getElementById('g-info').innerText = 'Не совпало!'; finishRound(0, false, 'МИМО'); }
+      } else if (curMode === 'upgrade') {
+        if (Math.random() < 0.45) { const w = Math.round(stake*2.2); document.getElementById('g-info').innerText = 'Апгрейд успешен! +' + w + ' 💎'; finishRound(w, true, 'УСПЕХ +' + w); }
+        else { document.getElementById('g-info').innerText = 'Сорвалось! Попробуй снова.'; finishRound(0, false, 'НЕУДАЧА'); }
+      } else {
+        const box = document.getElementById('c-box'); box.style.transform = 'scale(1.25) rotate(12deg)';
+        setTimeout(() => {
+          box.style.transform = 'scale(1)';
+          const m = '0,0.5,1.5,2,3,5'.split(',').map(Number).at(Math.floor(Math.random()*6));
+          const w = Math.round(stake * m);
+          document.getElementById('g-info').innerText = 'Выпал сектор x' + m + ' (+' + w + ' 💎)!';
+          finishRound(w, w >= stake, w > 0 ? '+'+w+' 💎' : 'ПУСТО');
+        }, 320);
       }
-      else if (g===2) { if(Math.abs(v2-v1)<=12){winPts(25);setBtn('ТОЧНО!','win');say('happy','Идеальный круг! +25!');}else{setBtn('ЗАНОВО');say('sad','Мимо!');} }
-      else if (g===3||g===7) { if(Math.abs(Math.sin(v1-v2))<0.25){winPts(20);setBtn('ПОПАЛ!','win');say('happy','В яблочко! +20!');}else{setBtn('ЗАНОВО');say('sad','Промах!');} }
-      else if (g===4||g===8) { if(Math.abs(v1-0.5)<0.08){winPts(20);setBtn('РОВНО!','win');say('happy','По центру! +20!');}else{setBtn('ЗАНОВО');say('sad','Сбился центр!');} }
-      else if (g===6) { const n=performance.now(); if(n<t0){setBtn('ФАЛЬСТАРТ!');say('sad','Рано!');}else{const ms=Math.round(n-t0);winPts(20);setBtn(ms+' МС!','win');say('happy',ms+' мс! +20!');} }
-      else if (g===15) { const s=(performance.now()-t0)/1000; if(Math.abs(s-3)<=0.25){winPts(30);setBtn(s.toFixed(2)+'с!','win');say('happy',s.toFixed(2)+'с! +30!');}else{setBtn(s.toFixed(2)+'с');say('sad','Вышло '+s.toFixed(2)+'с');} }
-      else if (g===16) { if(Math.abs(v1-45)<=14){winPts(25);setBtn('ПОЙМАЛ!','win');say('happy','Точно! +25!');}else{setBtn('ЗАНОВО');say('sad','Мимо!');} }
-    } else initG();
+    } else if (gState === 'run') {
+      cancelAnimationFrame(raf);
+      if (curMode === 'crash' || curMode === 'avalanche') {
+        const w = Math.round(stake * val);
+        document.getElementById('g-info').innerText = 'Зафиксировано на x' + val.toFixed(2);
+        finishRound(w, true, 'УСПЕЛ +' + w + ' 💎');
+      } else if (curMode === 'mines' && opened > 0) {
+        const w = Math.round(stake * val);
+        finishRound(w, true, 'ЗАБРАНО +' + w + ' 💎');
+      } else if (curMode === 'risk' || curMode === 'pvp') {
+        const deg = Math.round(((val * 180 / Math.PI) % 360 + 360) % 360);
+        const diff = Math.min(Math.abs(deg - lim), 360 - Math.abs(deg - lim));
+        if (diff <= 28) {
+          const w = Math.round(stake * 2.5);
+          document.getElementById('g-info').innerText = 'Точно! Твой угол ' + deg + '° (цель ' + lim + '°)';
+          finishRound(w, true, 'ПОБЕДА +' + w + ' 💎');
+        } else {
+          document.getElementById('g-info').innerText = 'Промах: ' + deg + '° вместо ' + lim + '°';
+          finishRound(0, false, 'МИМО');
+        }
+      }
+    }
   };
 
-  function loop() {
-    const W=gc.width, H=gc.height, cx=W/2, cy=H/2, g=cur; ctx.clearRect(0,0,W,H);
-    if (g===0) {
-      if (st==='run') { v1+=0.015; arr.push({x:30+Math.min(1,(v1-1)/4)*(W-60), y:H-40-Math.min(1,(v1-1)/4)*(H-110)}); if(v1>=v2){st='end';setBtn('СЛОМАЛСЯ');say('sad','Сломался на x'+v2+'!');} }
-      ctx.strokeStyle='#2563eb'; ctx.lineWidth=5; ctx.beginPath(); arr.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)); ctx.stroke();
-      ctx.fillStyle='#1e3a8a'; ctx.font='900 40px sans-serif'; ctx.textAlign='center'; ctx.fillText('x'+v1.toFixed(2),cx,75);
-    } else if (g===1||g===3||g===7) {
-      if (st==='run') { v2+=0.07; v1+=0.07; }
-      const r=Math.min(W,H)*0.32, ang=g===1?v2:v1, tAng=g===1?v1*Math.PI/180:-Math.PI/2;
-      ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=8; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
-      ctx.fillStyle='#10b981'; ctx.beginPath(); ctx.arc(cx+Math.cos(tAng)*r,cy+Math.sin(tAng)*r,12,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='#1e293b'; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(ang)*r,cy+Math.sin(ang)*r); ctx.stroke();
-    } else if (g===2) {
-      if (st==='run') { v2+=2.3*dir; if(v2>140||v2<15)dir*=-1; }
-      ctx.strokeStyle='rgba(16,185,129,.35)'; ctx.lineWidth=18; ctx.beginPath(); ctx.arc(cx,cy,v1,0,Math.PI*2); ctx.stroke();
-      ctx.strokeStyle='#2563eb'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(cx,cy,v2,0,Math.PI*2); ctx.stroke();
-    } else if (g===4||g===8) {
-      if (st==='run') { v1+=0.022*dir; if(v1>1||v1<0)dir*=-1; }
-      ctx.fillStyle='#cbd5e1'; ctx.fillRect(30,cy-10,W-60,20); ctx.fillStyle='#10b981'; ctx.fillRect(cx-18,cy-14,36,28);
-      ctx.fillStyle='#ef4444'; ctx.fillRect(30+v1*(W-60)-4,cy-22,8,44);
-    } else if (g===6) {
-      const rdy=st==='run'&&performance.now()>=t0; if(rdy&&mBtn.innerText.includes('ЖДИ'))setBtn('ЖМИ СЕЙЧАС!','win');
-      ctx.fillStyle=rdy?'#10b981':'#ef4444'; ctx.beginPath(); ctx.arc(cx,cy,75,0,Math.PI*2); ctx.fill();
-    } else if (g===15) {
-      const s=st==='run'?(performance.now()-t0)/1000:0; ctx.fillStyle='#1e3a8a'; ctx.font='900 44px sans-serif'; ctx.textAlign='center';
-      ctx.fillText(st==='run'&&s>1.2?'?.?? с':s.toFixed(2)+' с',cx,cy);
-    } else if (g===16) {
-      if (st==='run') { v1-=1.8; if(v1<10)v1=135; }
-      ctx.strokeStyle='rgba(37,99,235,.3)'; ctx.lineWidth=18; ctx.beginPath(); ctx.arc(cx,cy,45,0,Math.PI*2); ctx.stroke();
-      ctx.strokeStyle='#ef4444'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(cx,cy,v1,0,Math.PI*2); ctx.stroke();
+  function loopCanvas() {
+    const c = document.getElementById('g-cvs'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    ctx.clearRect(0,0,W,H);
+    if (curMode === 'crash' || curMode === 'avalanche') {
+      val += 0.016 + val * 0.004;
+      ovBtn.innerText = 'ЗАБРАТЬ (💎 ' + Math.round(stake * val) + ')';
+      const p = Math.min(1, (val - 1) / 4);
+      ctx.strokeStyle = curMode === 'avalanche' ? '#ec4899' : '#38bdf8'; ctx.lineWidth = 5; ctx.beginPath();
+      if (curMode === 'crash') { ctx.moveTo(20, H-25); ctx.quadraticCurveTo(W*0.5, H-25, 20+p*(W-45), H-25-p*(H-65)); }
+      else { ctx.moveTo(20, 35); ctx.quadraticCurveTo(W*0.5, 35, 20+p*(W-45), 35+p*(H-65)); }
+      ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = '900 42px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('x' + val.toFixed(2), W/2, H/2);
+      if (val >= lim) {
+        document.getElementById('g-info').innerText = 'Обрыв на x' + lim;
+        finishRound(0, false, 'ОБРЫВ'); return;
+      }
+    } else {
+      val += 0.08;
+      const r = 92, cx = W/2, cy = H/2, tRad = lim * Math.PI / 180;
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = '#10b981'; ctx.lineWidth = 16; ctx.beginPath(); ctx.arc(cx, cy, r, tRad - 0.35, tRad + 0.35); ctx.stroke();
+      ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(val)*r, cy + Math.sin(val)*r); ctx.stroke();
     }
-    raf = requestAnimationFrame(loop);
+    if (gState === 'run') raf = requestAnimationFrame(loopCanvas);
   }
+
+  renderTab();
 </script>
 </body>
 </html>
