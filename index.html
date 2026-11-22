@@ -784,3 +784,171 @@
   window.renderTab();
 })();
 </script>
+<script>
+(function(){
+  // Полная база 64 NFT Telegram с точными ценами в GRAM со скриншотов
+  window.TG_NFTS = [
+    {ico:'🧦',name:'Xmas Stocking',price:4.82,rar:'Common'},{ico:'🍦',name:'Vice Cream',price:4.96,rar:'Common'},
+    {ico:'🔥',name:'Chill Flame',price:4.97,rar:'Common'},{ico:'🐍',name:'Lunar Snake',price:4.98,rar:'Common'},
+    {ico:'📦',name:'Snake Box',price:4.98,rar:'Common'},{ico:'🎆',name:'Big Year',price:4.99,rar:'Common'},
+    {ico:'🍜',name:'Instant Ramen',price:4.99,rar:'Common'},{ico:'🐰',name:'Pool Float',price:4.99,rar:'Common'},
+    {ico:'🧁',name:'Whip Cupcake',price:4.99,rar:'Common'},{ico:'🍭',name:'Lol Pop',price:5.00,rar:'Common'},
+    {ico:'🪔',name:'Mirage Lamp',price:5.05,rar:'Common'},{ico:'🍬',name:'Candy Cane',price:5.09,rar:'Common'},
+    {ico:'🥚',name:'Easter Egg',price:5.11,rar:'Common'},{ico:'🍨',name:'Ice Cream',price:5.18,rar:'Common'},
+    {ico:'🦢',name:'Pet Snake',price:5.33,rar:'Common'},{ico:'🃏',name:'Jester Hat',price:5.35,rar:'Common'},
+    {ico:'🎁',name:'Jack-in-the-Box',price:5.39,rar:'Common'},{ico:'💩',name:'Happy Brownie',price:5.42,rar:'Common'},
+    {ico:'🌀',name:'Hypno Lollipop',price:5.45,rar:'Common'},{ico:'🍹',name:'Holiday Drink',price:5.47,rar:'Common'},
+    {ico:'🏅',name:'Victory Medal',price:5.48,rar:'Common'},{ico:'👾',name:'Mood Pack',price:5.61,rar:'Rare'},
+    {ico:'📟',name:'Tama Gadget',price:5.66,rar:'Rare'},{ico:'🧦',name:'Fresh Socks',price:5.68,rar:'Rare'},
+    {ico:'📕',name:'Timeless Book',price:5.69,rar:'Rare'},{ico:'🍯',name:'Money Pot',price:5.71,rar:'Rare'},
+    {ico:'🍪',name:'Ginger Cookie',price:5.84,rar:'Rare'},{ico:'⚗️',name:'Hex Pot',price:5.89,rar:'Rare'},
+    {ico:'📔',name:'Star Notepad',price:5.89,rar:'Rare'},{ico:'🍰',name:'Mousse Cake',price:5.98,rar:'Rare'},
+    {ico:'🎄',name:'Winter Wreath',price:6.04,rar:'Rare'},{ico:'✨',name:'Party Sparkler',price:6.05,rar:'Rare'},
+    {ico:'🕯️',name:'B-Day Candle',price:6.08,rar:'Rare'},{ico:'🍷',name:'Spiced Wine',price:6.14,rar:'Rare'},
+    {ico:'🚀',name:'Stellar Rocket',price:6.16,rar:'Rare'},{ico:'📅',name:'Desk Calendar',price:6.23,rar:'Rare'},
+    {ico:'🎂',name:'Homemade Cake',price:6.31,rar:'Rare'},{ico:'💖',name:'Cookie Heart',price:6.35,rar:'Rare'},
+    {ico:'💐',name:'Pretty Posy',price:6.39,rar:'Rare'},{ico:'🍀',name:'Clover Pin',price:6.40,rar:'Rare'},
+    {ico:'🧙',name:'Witch Hat',price:6.62,rar:'Rare'},{ico:'🪻',name:'Lush Bouquet',price:6.72,rar:'Rare'},
+    {ico:'🫙',name:'Restless Jar',price:6.75,rar:'Rare'},{ico:'🧺',name:'Spring Basket',price:6.77,rar:'Rare'},
+    {ico:'🐶',name:'Snoop Dogg',price:6.88,rar:'Epic'},{ico:'🎀',name:'Bow Tie',price:6.89,rar:'Epic'},
+    {ico:'🗽',name:'Liberty Figure',price:6.89,rar:'Epic'},{ico:'🕌',name:'Faith Amulet',price:7.00,rar:'Epic'},
+    {ico:'🎒',name:'Swag Bag',price:7.00,rar:'Epic'},{ico:'🕯️',name:'Eternal Candle',price:7.29,rar:'Epic'},
+    {ico:'🗝️',name:'Input Key',price:7.65,rar:'Epic'},{ico:'🌙',name:'Moon Pendant',price:7.78,rar:'Epic'},
+    {ico:'⚔️',name:'Light Sword',price:7.81,rar:'Epic'},{ico:'🏄',name:'Surge Board',price:8.20,rar:'Epic'},
+    {ico:'🍄',name:'Spy Agaric',price:8.29,rar:'Epic'},{ico:'🔮',name:'Snow Globe',price:8.74,rar:'Epic'},
+    {ico:'🎅',name:'Santa Hat',price:9.17,rar:'Epic'},{ico:'🎭',name:'Myth Mask',price:9.39,rar:'Epic'},
+    {ico:'🖋️',name:'Fine Pen',price:9.56,rar:'Epic'},{ico:'🧿',name:'Evil Eye',price:9.73,rar:'Epic'},
+    {ico:'🧸',name:'Joyful Bundle',price:9.75,rar:'Epic'},{ico:'🐒',name:'Jolly Chimp',price:9.95,rar:'Epic'},
+    {ico:'🧤',name:'Snow Mittens',price:9.95,rar:'Epic'},{ico:'🧁',name:'Bunny Muffin',price:10.59,rar:'Legendary'},
+    {ico:'🔔',name:'Sleigh Bell',price:10.66,rar:'Legendary'},{ico:'🍫',name:'Berry Box',price:10.81,rar:'Legendary'},
+    {ico:'🐰',name:'Jelly Bunny',price:11.16,rar:'Legendary'},{ico:'⭐',name:'Hanging Star',price:11.45,rar:'Legendary'},
+    {ico:'🎩',name:'Top Hat',price:11.50,rar:'Legendary'},{ico:'🛎️',name:'Jingle Bells',price:11.96,rar:'Legendary'},
+    {ico:'🌸',name:'Sakura Flower',price:12.59,rar:'Legendary'},{ico:'💛',name:'Love Candle',price:13.27,rar:'Legendary'},
+    {ico:'🎃',name:'Mad Pumpkin',price:13.99,rar:'Legendary'},{ico:'🧹',name:'Flying Broom',price:14.50,rar:'Legendary'},
+    {ico:'💀',name:'Skull Flower',price:14.62,rar:'Legendary'},{ico:'💝',name:'Valentine Box',price:15.00,rar:'Legendary'},
+    {ico:'📻',name:'Record Player',price:15.30,rar:'Legendary'},{ico:'🧢',name:"Durov's Cap",price:120.00,rar:'Legendary'},
+    {ico:'🐸',name:'Plush Pepe',price:350.00,rar:'Legendary'}
+  ];
+  // Фильтр поиска по 67 NFT в Рюкзаке/Маркете
+  window.nftQuery = '';
+  const origGramTab = window.renderGramTab;
+  window.renderGramTab = function(tab) {
+    origGramTab(tab);
+    const view = document.getElementById('view');
+    if (!view) return;
+
+    if (tab === 'bag') {
+      let gSt = JSON.parse(localStorage.getItem('circul_gram_v1') || '{"bal":50,"inv":""}');
+      const myItems = gSt.inv ? gSt.inv.split(',').filter(Boolean) : [];
+      const filtered = window.TG_NFTS.filter(n => n.name.toLowerCase().includes(window.nftQuery.toLowerCase()));
+
+      view.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b style="font-size:16px">🎒 Мой Рюкзак (${myItems.length})</b>
+          <span style="font-size:11px;color:#00f5d4">Тапни для продажи (85%)</span>
+        </div>
+        <div class="grid-2">` + (myItems.length ? myItems.map((raw, idx) => {
+          const p = raw.split('|'), sellP = +(Number(p || 4.8) * 0.85).toFixed(2);
+          return `<div class="nft-card" onclick="sellGramNft(${idx}, ${sellP})">
+            <div class="float-ico" style="font-size:36px">${p}</div>
+            <b style="font-size:12px">${p}</b>
+            <span style="font-size:10px;color:#38bdf8;margin-top:4px">Продать: ${sellP.toFixed(2)} GRAM</span>
+          </div>`;
+        }).join('') : '<div style="grid-column:span 2;color:#94a3b8;font-size:12px">Рюкзак пуст — открой кейс или купи подарок ниже!</div>') + `</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px">
+          <b style="font-size:15px">🏛️ Маркет (${filtered.length}/67)</b>
+          <input type="text" placeholder="Поиск NFT..." value="${window.nftQuery}" oninput="window.nftQuery=this.value;window.renderGramTab('bag')" style="background:#131929;border:1px solid #38bdf8;color:#fff;padding:6px 10px;border-radius:10px;font-size:12px;width:140px">
+        </div>
+        <div class="grid-2">` + filtered.map(n => {
+          const rCls = n.rar === 'Legendary' ? 'leg' : (n.rar === 'Epic' ? 'ep' : '');
+          return `<div class="nft-card">
+            <span class="nft-rar ${rCls}">${n.rar}</span>
+            <div class="float-ico" style="font-size:38px;margin:4px 0">${n.ico}</div>
+            <b style="font-size:12px">${n.name}</b>
+            <button type="button" class="chip act" style="width:100%;margin-top:8px" onclick="buyGramNft('${n.ico}','${n.name.replace(/'/g, "")}',${n.price})">💠 ${n.price.toFixed(2)}</button>
+          </div>`;
+        }).join('') + `</div>`;
+    } else if (tab === 'cases') {
+      // Обновляем тиры кейсов под реальные цены от 4.82 до 350 GRAM
+      const btns = view.querySelectorAll('.nft-card button');
+      const prices = [4.50, 7.50, 12.00, 35.00];
+      const names = ['Стартовый (4.8–5.6)', 'Редкий (5.6–6.8)', 'Эпический (6.8–10)', 'Легенда (10–350)'];
+      view.querySelectorAll('.nft-card').forEach((card, i) => {
+        if (prices[i]) {
+          card.querySelector('b').innerText = names[i];
+          card.querySelector('button').innerText = 'Открыть · ' + prices[i].toFixed(2) + ' GRAM';
+        }
+      });
+    }
+  };
+
+  // Улучшенная рулетка кейсов с точным подбором по ценам 67 NFT
+  window.spinCase = (cid) => {
+    let gSt = JSON.parse(localStorage.getItem('circul_gram_v1') || '{"bal":50,"inv":""}');
+    const cfgMap = {
+      c1: { cost: 4.50, min: 4.80, max: 5.60 },
+      c2: { cost: 7.50, min: 5.60, max: 6.80 },
+      c3: { cost: 12.00, min: 6.80, max: 10.00 },
+      c4: { cost: 35.00, min: 10.00, max: 400.00 }
+    };
+    const cfg = cfgMap[cid] || cfgMap.c1;
+    if (gSt.bal < cfg.cost) return alert('Не хватает GRAM! Нажмите + вверху для пополнения.');
+    gSt.bal -= cfg.cost;
+    localStorage.setItem('circul_gram_v1', JSON.stringify(gSt));
+    window.syncGramUI();
+
+    const pool = window.TG_NFTS.filter(n => n.price >= cfg.min && n.price <= cfg.max);
+    const winNft = pool[Math.floor(Math.random() * pool.length)] || window.TG_NFTS;
+    const track = document.getElementById('case-track');
+    const winIdx = 28;
+    let html = '';
+    for (let i = 0; i < 35; i++) {
+      const item = (i === winIdx) ? winNft : pool[Math.floor(Math.random() * pool.length)];
+      const rCls = item.rar === 'Legendary' ? 'leg' : (item.rar === 'Epic' ? 'ep' : '');
+      html += `<div class="case-slot ${rCls}"><div style="font-size:32px">${item.ico}</div><div style="font-size:9px;font-weight:800;color:#bae6fd">${item.price.toFixed(2)}</div></div>`;
+    }
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(0px)';
+    track.innerHTML = html;
+
+    const targetX = -(winIdx * 94 + 43 + (Math.floor(Math.random() * 40) - 20));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      track.style.transition = 'transform 4.2s cubic-bezier(0.08, 0.88, 0.16, 1)';
+      track.style.transform = 'translateX(' + targetX + 'px)';
+    }));
+
+    document.getElementById('case-res').innerText = '⚡ Вращение портала...';
+    setTimeout(() => {
+      gSt = JSON.parse(localStorage.getItem('circul_gram_v1') || '{"bal":50,"inv":""}');
+      const entry = winNft.ico + '|' + winNft.name + '|' + winNft.price.toFixed(2);
+      gSt.inv = gSt.inv ? (gSt.inv + ',' + entry) : entry;
+      localStorage.setItem('circul_gram_v1', JSON.stringify(gSt));
+      window.syncGramUI();
+      document.getElementById('case-res').innerHTML = '✨ Выпал: ' + winNft.ico + ' <b>' + winNft.name + '</b> (' + winNft.price.toFixed(2) + ' GRAM)!';
+      const vp = document.getElementById('case-vp');
+      if (vp) { vp.classList.remove('shake-anim'); void vp.offsetWidth; vp.classList.add('shake-anim'); }
+    }, 4350);
+  };
+
+  // Аниме-аура вращающихся рун циркуля на всех игровых канвасах
+  let animeAngle = 0;
+  setInterval(() => {
+    const cvs = document.querySelector('#m-body canvas');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d'), cx = cvs.width / 2, cy = cvs.height / 2;
+    animeAngle += 0.08;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(animeAngle);
+    ctx.strokeStyle = 'rgba(0, 245, 212, 0.22)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([10, 6]);
+    ctx.beginPath(); ctx.arc(0, 0, Math.min(cx, cy) - 10, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }, 40);
+
+  window.syncGramUI();
+})();
+</script>
+</body>
+</html>
