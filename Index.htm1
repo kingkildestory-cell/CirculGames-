@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Мастерская Циркуля — 20 Игр</title>
+<script src="https://telegram.org"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
+  body{background:#eef4fc;background-image:linear-gradient(to right,rgba(37,99,235,.14) 1px,transparent 1px),linear-gradient(to bottom,rgba(37,99,235,.14) 1px,transparent 1px);background-size:20px 20px;font-family:-apple-system,sans-serif;color:#1e293b;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  #header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#fff;border-bottom:2px solid #bfdbfe}
+  .m-wrap{display:flex;align-items:center;gap:8px}
+  #mascot{width:46px;height:46px;border-radius:12px;background:#dbeafe;border:2px solid #3b82f6;image-rendering:pixelated}
+  #speech{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:5px 8px;font-size:11px;font-weight:700;color:#1d4ed8;max-width:175px;line-height:1.2}
+  .pts{background:#1e3a8a;color:#fff;padding:6px 10px;border-radius:10px;font-size:12px;font-weight:800;text-align:right}
+  #mp-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#dbeafe;border-bottom:1px solid #93c5fd;font-size:11px;font-weight:800}
+  .mp-b{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:5px 9px;font-size:11px;font-weight:800}
+  #menu{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .card{background:#fff;border:2px solid #93c5fd;border-radius:14px;padding:11px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .card:active{background:#dbeafe;transform:scale(.97)}
+  #play{display:none;flex:1;flex-direction:column}
+  #g-top{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border-bottom:1px solid #bfdbfe}
+  #c-wrap{position:relative;flex:1;width:100%;overflow:hidden}
+  #gc{display:block;width:100%;height:100%}
+  #board{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px;gap:10px;text-align:center}
+  #ctrls{padding:12px 14px 18px;background:#fff;border-top:2px solid #bfdbfe}
+  .btn{width:100%;padding:15px;font-size:16px;font-weight:900;background:#2563eb;color:#fff;border:none;border-radius:12px}
+  .btn.stop{background:#ef4444} .btn.win{background:#10b981}
+  .g-grid{display:grid;grid-template-columns:repeat(3,74px);gap:6px}
+  .cell{height:74px;background:#fff;border:2px solid #3b82f6;border-radius:10px;font-size:22px;font-weight:900;color:#1e3a8a}
+  #modal{position:fixed;inset:0;background:rgba(15,23,42,.88);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .m-card{background:#fff;border-radius:16px;padding:18px;width:100%;max-width:320px;text-align:center;display:flex;flex-direction:column;gap:10px}
+  .m-card input{padding:11px;border:2px solid #93c5fd;border-radius:10px;font-size:16px;font-weight:800;text-align:center;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="header">
+  <div class="m-wrap"><canvas id="mascot" width="32" height="32"></canvas><div id="speech">Выбирай игру или зови друга!</div></div>
+  <div class="pts">ОЧКИ<br><span id="pts">0</span></div>
+</div>
+<div id="mp-bar">
+  <span id="mp-st">Одиночный режим</span>
+  <div><button class="mp-b" id="b-hs">👥 1 на 1</button> <button class="mp-b" style="background:#0f172a" id="b-on">🌐 Комната</button></div>
+</div>
+<div id="menu"></div>
+<div id="play">
+  <div id="g-top"><button class="mp-b" style="background:#64748b" id="b-back">← Меню</button><b id="g-title">Игра</b><b id="turn" style="color:#dc2626;font-size:12px"></b></div>
+  <div id="c-wrap"><canvas id="gc"></canvas><div id="board"></div></div>
+  <div id="ctrls"><button class="btn" id="m-btn">СТАРТ</button></div>
+</div>
+<div id="modal"><div class="m-card">
+  <h3>Онлайн-комната (1 на 1)</h3>
+  <input id="r-inp" maxlength="6" placeholder="КОД (напр. A7K9)">
+  <button class="mp-b" style="padding:12px" id="b-join">ВОЙТИ / СОЗДАТЬ</button>
+  <button class="mp-b" style="background:#64748b;padding:10px" id="b-solo">ОДИНОЧНЫЙ РЕЖИМ</button>
+  <button style="border:none;background:none;color:#64748b;font-weight:700" id="b-cls">Закрыть</button>
+</div></div>
+<script>
+  if (window.Telegram?.WebApp) window.Telegram.WebApp.expand();
+  const mCtx = document.getElementById('mascot').getContext('2d'), speech = document.getElementById('speech');
+  function drawMascot(m) {
+    mCtx.clearRect(0,0,32,32);
+    mCtx.fillStyle='#1d4ed8'; mCtx.fillRect(6,7,20,17); mCtx.fillRect(4,11,24,11);
+    mCtx.fillStyle='#94a3b8'; mCtx.fillRect(19,2,6,2); mCtx.fillRect(18,4,2,4); mCtx.fillRect(24,4,2,4);
+    mCtx.fillStyle='#fed7aa'; mCtx.fillRect(9,10,14,12);
+    mCtx.fillStyle='#2563eb'; mCtx.fillRect(8,7,16,5); mCtx.fillRect(10,12,3,2); mCtx.fillRect(15,12,2,3); mCtx.fillRect(19,12,3,2);
+    mCtx.fillStyle='#0284c7'; mCtx.fillRect(9,23,14,9); mCtx.fillStyle='#38bdf8'; mCtx.fillRect(12,24,8,8);
+    if (m==='happy') {
+      mCtx.fillStyle='#0f172a'; mCtx.fillRect(11,14,3,4); mCtx.fillRect(18,14,3,4);
+      mCtx.fillStyle='#38bdf8'; mCtx.fillRect(11,16,3,2); mCtx.fillRect(18,16,3,2);
+      mCtx.fillStyle='#f43f5e'; mCtx.fillRect(14,19,4,2);
+    } else if (m==='sad') {
+      mCtx.fillStyle='#0f172a'; mCtx.fillRect(10,15,4,1); mCtx.fillRect(18,15,4,1);
+      mCtx.fillStyle='#38bdf8'; mCtx.fillRect(9,16,2,4); mCtx.fillRect(21,16,2,4);
+      mCtx.fillStyle='#e11d48'; mCtx.fillRect(14,19,4,2);
+    } else {
+      mCtx.fillStyle='#0f172a'; mCtx.fillRect(11,14,3,3); mCtx.fillRect(18,14,3,3);
+      mCtx.fillStyle='#f43f5e'; mCtx.fillRect(15,19,2,1); mCtx.fillStyle='#fff'; mCtx.fillRect(14,21,4,3);
+    }
+  }
+  function say(m, t) { drawMascot(m); speech.innerText = t; }
+  drawMascot('think');
+
+  let pts = Number(localStorage.getItem('c20_pts') || 0);
+  const ptsEl = document.getElementById('pts'); ptsEl.innerText = pts;
+  function addPts(n) { pts = Math.max(0, pts + n); ptsEl.innerText = pts; localStorage.setItem('c20_pts', pts); }
+
+  let mp = 'solo', curP = 1, s1 = 0, s2 = 0, room = '';
+  const FB_URL = "";
+  const mpSt = document.getElementById('mp-st'), turnEl = document.getElementById('turn');
+
+  function updMp() {
+    if (mp==='solo') { mpSt.innerText = 'Одиночный режим'; turnEl.innerText = ''; }
+    else if (mp==='hs') { mpSt.innerText = `1 на 1: И1 [${s1}] : И2 [${s2}]`; turnEl.innerText = `Ход И${curP}`; }
+    else { mpSt.innerText = `Комната ${room}: Вы [${s1}] : Враг [${s2}]`; turnEl.innerText = room; }
+  }
+  document.getElementById('b-hs').onclick = () => { mp = mp==='hs'?'solo':'hs'; curP=1; s1=0; s2=0; updMp(); say('happy', mp==='hs'?'Играем вдвоем на 1 экране!':'Одиночный режим.'); };
+  document.getElementById('b-on').onclick = () => document.getElementById('modal').style.display='flex';
+  document.getElementById('b-cls').onclick = () => document.getElementById('modal').style.display='none';
+  document.getElementById('b-solo').onclick = () => { mp='solo'; updMp(); document.getElementById('modal').style.display='none'; };
+  document.getElementById('b-join').onclick = () => {
+    room = document.getElementById('r-inp').value.trim().toUpperCase() || Math.random().toString(36).substring(2,6).toUpperCase();
+    mp='on'; s1=0; s2=0; updMp(); document.getElementById('modal').style.display='none';
+    say('happy', `Код комнаты: ${room}. Отправь другу!`); syncFb(0);
+  };
+  async function syncFb(add) {
+    if (mp!=='on' || !FB_URL) return;
+    try {
+      const uid = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 'u_' + (localStorage.getItem('cuid') || (localStorage.setItem('cuid', Math.floor(Math.random()*99999)), localStorage.getItem('cuid')));
+      if (add>0) await fetch(`${FB_URL}/r/${room}/${uid}.json`, {method:'PUT', body:JSON.stringify({s:s1})});
+      const d = await (await fetch(`${FB_URL}/r/${room}.json`)).json();
+      if (d) { for (const k in d) if (k!==String(uid)) s2 = d[k].s || 0; updMp(); }
+    } catch(e) {}
+  }
+  setInterval(()=>{ if(mp==='on') syncFb(0); }, 3500);
+  function winPts(p) {
+    if (mp==='solo') addPts(p);
+    else if (mp==='hs') { if(curP===1){s1+=p;curP=2;}else{s2+=p;curP=1;} updMp(); }
+    else { s1+=p; addPts(p); updMp(); syncFb(p); }
+  }
+  const menu = document.getElementById('menu'), play = document.getElementById('play');
+  const gc = document.getElementById('gc'), ctx = gc.getContext('2d'), board = document.getElementById('board');
+  const mBtn = document.getElementById('m-btn'), gTitle = document.getElementById('g-title');
+  let cur = 0, st = 'idle', raf, t0 = 0, v1 = 0, v2 = 0, dir = 1, arr = [];
+
+  const GAMES = [
+    ['🚀','Полет по дуге','Тайминг'],['⚔️','Дуэль PvP','Угол 1v1'],['🎯','Идеальный круг','Радиус'],['📍','Шаг циркуля','Точность'],
+    ['📏','Баланс линейки','Центр'],['📐','Угол на глаз','Глазомер'],['⚡','Реакция иглы','Скорость'],['🌀','Врата спирали','Ритм'],
+    ['✂️','Отрезок 50%','Деление'],['🔢','Сумма углов','Счет'],['👁️','Лишняя фигура','Внимание'],['🧠','Память сетки','Память'],
+    ['❌','Крестики-нолики','Логика'],['💣','Кляксы-сапер','Риск'],['🎲','Больше-меньше','Интуиция'],['⏱️','Ровно 3.00 сек','Время'],
+    ['🧲','Сжатие кольца','Реакция'],['🔺','Тип угла','Геометрия'],['🎨','Тест грифеля','Мозг'],['🏆','Блиц 20 кликов','Спринт']
+  ];
+
+  GAMES.forEach((g, i) => {
+    const d = document.createElement('div'); d.className = 'card';
+    d.innerHTML = `<div style="font-size:22px">${g[0]}</div><b style="font-size:12px;color:#1e3a8a">${i+1}. ${g[1]}</b><span style="font-size:10px;color:#64748b;font-weight:700">${g[2]}</span>`;
+    d.onclick = () => openG(i); menu.appendChild(d);
+  });
+
+  document.getElementById('b-back').onclick = () => {
+    cancelAnimationFrame(raf); st = 'idle'; play.style.display = 'none'; menu.style.display = 'grid';
+    say('think', 'Выбирай следующую игру!');
+  };
+  function openG(i) {
+    cur = i; menu.style.display = 'none'; play.style.display = 'flex';
+    gTitle.innerText = GAMES[i][1]; gc.width = gc.parentElement.clientWidth; gc.height = gc.parentElement.clientHeight;
+    initG();
+  }
+  function setBtn(t, c='') { mBtn.innerText = t; mBtn.className = 'btn ' + c; mBtn.style.display = 'block'; }
+  function showB(h) { gc.style.display = 'none'; board.style.display = 'flex'; board.innerHTML = h; mBtn.style.display = 'none'; }
+  function showC() { board.style.display = 'none'; gc.style.display = 'block'; }
+  function initG() {
+    cancelAnimationFrame(raf); st = 'idle'; showC(); setBtn('СТАРТ');
+    const g = cur;
+    if (g===0) { v1=1; v2=+(1.4+Math.random()*3.5).toFixed(2); arr=[]; say('think','Зафиксируй дугу до поломки!'); }
+    else if (g===1) { v1=Math.floor(30+Math.random()*300); v2=0; say('think',`Останови ближе к ${v1}°!`); }
+    else if (g===2) { v1=Math.floor(60+Math.random()*65); v2=20; dir=1; say('think','Попади в зеленое кольцо!'); }
+    else if (g===3 || g===7) { v1=-Math.PI/2; v2=-Math.PI/4; say('think','Нажми точно в верхней точке!'); }
+    else if (g===4 || g===8) { v1=0.1; dir=1; say('think','Останови ползунок ровно по центру!'); }
+    else if (g===5) {
+      v1 =[Math.floor(Math.random()*7)];
+      const opts = [v1, (v1+30)%180||45, (v1+60)%180||90].sort(()=>Math.random()-0.5);
+      showB(`<b>Определи угол на глаз (${v1}°):</b>` + opts.map(o=>`<button class="btn" style="width:200px" onclick="ansQ(${o===v1})">${o}°</button>`).join(''));
+    }
+    else if (g===6) { v1=0; say('think','Жми СТАРТ, затем жди зеленый цвет!'); }
+    else if (g===9) {
+      const a=Math.floor(30+Math.random()*50), b=Math.floor(30+Math.random()*50), c=180-a-b;
+      const opts=[c, c+10, c-10].sort(()=>Math.random()-0.5);
+      showB(`<b>Треугольник: ${a}° + ${b}° + ? = 180°</b>` + opts.map(o=>`<button class="btn" style="width:200px" onclick="ansQ(${o===c})">${o}°</button>`).join(''));
+    }
+    else if (g===10) {
+      const bad = Math.floor(Math.random()*9); let h = '<div class="g-grid">';
+      for(let i=0;i<9;i++) h += `<button class="cell" onclick="ansQ(${i===bad})">${i===bad?'📐':'📏'}</button>`;
+      showB(h+'</div>'); say('think','Найди лишний инструмент!');
+    }
+    else if (g===11) {
+      arr =.sort(()=>Math.random()-0.5).slice(0,3); v1=0;
+      renMem(true); say('think','Запомни синие клетки!');
+      setTimeout(()=>{ renMem(false); say('think','Открой все 3 клетки!'); }, 1700);
+    }
+    else if (g===12) { arr=Array(9).fill(''); renTTT(); say('think','Твой ход (X)!'); }
+    else if (g===13) { arr=.sort(()=>Math.random()-0.5).slice(0,2); v1=0; renMine(); say('think','Открой 4 клетки без клякс!'); }
+    else if (g===14) {
+      v1=Math.floor(20+Math.random()*60); v2=Math.floor(15+Math.random()*70);
+      showB(`<b>Радиус сейчас: ${v1} мм<br>Следующий будет...</b><button class="btn win" style="width:210px" onclick="ansQ(${v2>=v1})">БОЛЬШЕ ⬆️</button><button class="btn stop" style="width:210px" onclick="ansQ(${v2<v1})">МЕНЬШЕ ⬇️</button>`);
+    }
+    else if (g===15) { v1=0; say('think','Останови таймер ровно на 3.00 сек!'); }
+    else if (g===16) { v1=130; say('think','Останови кольцо в синей зоне!'); }
+    else if (g===17) {
+      const deg =[Math.floor(Math.random()*3)];
+      const ans = deg<90?'Острый':(deg===90?'Прямой':'Тупой');
+      showB(`<b>Угол равен ${deg}°. Какой он?</b>` + ['Острый','Прямой','Тупой'].map(x=>`<button class="btn" style="width:210px" onclick="ansQ('${x}'==='${ans}')">${x}</button>`).join(''));
+    }
+    else if (g===18) {
+      const cols = [{n:'СИНИЙ',c:'#2563eb'},{n:'КРАСНЫЙ',c:'#ef4444'},{n:'ЗЕЛЕНЫЙ',c:'#10b981'}];
+      const w = cols[Math.floor(Math.random()*3)], ink = cols[Math.floor(Math.random()*3)];
+      showB(`<span>Нажми на ЦВЕТ букв:</span><b style="font-size:30px;color:${ink.c}">${w.n}</b>` + cols.map(x=>`<button class="btn" style="width:210px" onclick="ansQ('${x.c}'==='${ink.c}')">${x.n}</button>`).join(''));
+    }
+    else if (g===19) { v1=0; t0=0; setBtn('ЖМИ БЫСТРО (0 / 20)'); say('think','Сделай 20 кликов на скорость!'); }
+    loop();
+  }
+  window.ansQ = (ok) => {
+    if (ok) { winPts(20); say('happy','Верно! +20 очков!'); } else say('sad','Ошибка! Попробуй еще.');
+    setTimeout(initG, 850);
+  };
+  function renMem(show) {
+    let h = '<div class="g-grid">';
+    for(let i=0;i<9;i++) { const l = show && arr.includes(i); h += `<button class="cell" style="background:${l?'#3b82f6':'#fff'}" onclick="pMem(${i},this)">${l?'★':''}</button>`; }
+    showB(h+'</div>');
+  }
+  window.pMem = (i, el) => {
+    if (arr.includes(i)) { el.style.background='#10b981'; el.innerText='✓'; v1++; if(v1===3){ winPts(25); say('happy','Отличная память! +25!'); setTimeout(initG,850); } }
+    else { el.style.background='#ef4444'; say('sad','Не та клетка!'); setTimeout(initG,850); }
+  };
+  function renTTT() {
+    let h = '<div class="g-grid">'; arr.forEach((v,i)=> h += `<button class="cell" onclick="mTTT(${i})">${v}</button>`); showB(h+'</div>');
+  }
+  window.mTTT = (i) => {
+    if (arr[i]) return; arr[i] = 'X';
+    if (chkTTT('X')) { renTTT(); winPts(30); say('happy','Победа! +30!'); setTimeout(initG,950); return; }
+    const emp = arr.map((v,idx)=>v===''?idx:-1).filter(x=>x>=0);
+    if (!emp.length) { renTTT(); say('think','Ничья!'); setTimeout(initG,950); return; }
+    arr[emp[Math.floor(Math.random()*emp.length)]] = 'O'; renTTT();
+    if (chkTTT('O')) { say('sad','Маскот победил!'); setTimeout(initG,950); }
+  };
+  function chkTTT(p) { return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(c=>c.every(i=>arr[i]===p)); }
+  function renMine() {
+    let h = '<div class="g-grid">'; for(let i=0;i<9;i++) h += `<button class="cell" onclick="sMine(${i},this)">?</button>`; showB(h+'</div>');
+  }
+  window.sMine = (i, el) => {
+    if (arr.includes(i)) { el.style.background='#ef4444'; el.innerText='💧'; say('sad','Клякса! Чертеж испорчен.'); setTimeout(initG,850); }
+    else if (el.innerText==='?') { el.style.background='#10b981'; el.innerText='✓'; v1++; if(v1===4){ winPts(25); say('happy','Чисто! +25!'); setTimeout(initG,850); } }
+  };
+
+  mBtn.onclick = () => {
+    const g = cur;
+    if (g===19) {
+      if (!t0) t0 = performance.now(); v1++; setBtn(`ЖМИ БЫСТРО (${v1} / 20)`);
+      if (v1>=20) { const s=((performance.now()-t0)/1000).toFixed(2); winPts(25); say('happy',`20 кликов за ${s}с! +25!`); setTimeout(initG,1100); }
+      return;
+    }
+    if (st==='idle') {
+      st='run'; setBtn('СТОП!','stop');
+      if (g===6) { t0=performance.now()+1200+Math.random()*2000; setBtn('ЖДИ ЗЕЛЕНЫЙ...','stop'); }
+      if (g===15) t0=performance.now();
+    } else if (st==='run') {
+      st='end';
+      if (g===0) { const p=Math.round(v1*15); winPts(p); setBtn('ЕЩЁ РАЗ','win'); say('happy',`x${v1.toFixed(2)} (+${p} очков)!`); }
+      else if (g===1) {
+        const pD=Math.round(((v2*180/Math.PI)%360+360)%360), bD=(v1+Math.floor(Math.random()*36)-18+360)%360;
+        const dp=Math.min(Math.abs(pD-v1),360-Math.abs(pD-v1)), db=Math.min(Math.abs(bD-v1),360-Math.abs(bD-v1));
+        if (dp<=db) { winPts(25); setBtn('ПОБЕДА!','win'); say('happy',`Ты:${pD}°, Враг:${bD}° (+25)!`); }
+        else { setBtn('ЗАНОВО'); say('sad',`Ты:${pD}°, Враг ближе:${bD}°`); }
+      }
+      else if (g===2) { if(Math.abs(v2-v1)<=12){winPts(25);setBtn('ТОЧНО!','win');say('happy','Идеальный круг! +25!');}else{setBtn('ЗАНОВО');say('sad','Мимо!');} }
+      else if (g===3||g===7) { if(Math.abs(Math.sin(v1-v2))<0.25){winPts(20);setBtn('ПОПАЛ!','win');say('happy','В яблочко! +20!');}else{setBtn('ЗАНОВО');say('sad','Промах!');} }
+      else if (g===4||g===8) { if(Math.abs(v1-0.5)<0.08){winPts(20);setBtn('РОВНО!','win');say('happy','По центру! +20!');}else{setBtn('ЗАНОВО');say('sad','Сбился центр!');} }
+      else if (g===6) { const n=performance.now(); if(n<t0){setBtn('ФАЛЬСТАРТ!');say('sad','Рано!');}else{const ms=Math.round(n-t0);winPts(20);setBtn(`${ms} МС!`,'win');say('happy',`${ms} мс! +20!`);} }
+      else if (g===15) { const s=(performance.now()-t0)/1000; if(Math.abs(s-3)<=0.25){winPts(30);setBtn(`${s.toFixed(2)}с!`,'win');say('happy',`${s.toFixed(2)}с! +30!`);}else{setBtn(`${s.toFixed(2)}с`);say('sad',`Вышло ${s.toFixed(2)}с`);} }
+      else if (g===16) { if(Math.abs(v1-45)<=14){winPts(25);setBtn('ПОЙМАЛ!','win');say('happy','Точно! +25!');}else{setBtn('ЗАНОВО');say('sad','Мимо!');} }
+    } else initG();
+  };
+
+  function loop() {
+    const W=gc.width, H=gc.height, cx=W/2, cy=H/2, g=cur; ctx.clearRect(0,0,W,H);
+    if (g===0) {
+      if (st==='run') { v1+=0.015; arr.push({x:30+Math.min(1,(v1-1)/4)*(W-60), y:H-40-Math.min(1,(v1-1)/4)*(H-110)}); if(v1>=v2){st='end';setBtn('СЛОМАЛСЯ');say('sad',`Сломался на x${v2}!`);} }
+      ctx.strokeStyle='#2563eb'; ctx.lineWidth=5; ctx.beginPath(); arr.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)); ctx.stroke();
+      ctx.fillStyle='#1e3a8a'; ctx.font='900 40px sans-serif'; ctx.textAlign='center'; ctx.fillText(`x${v1.toFixed(2)}`,cx,75);
+    } else if (g===1||g===3||g===7) {
+      if (st==='run') { v2+=0.07; v1+=0.07; }
+      const r=Math.min(W,H)*0.32, ang=g===1?v2:v1, tAng=g===1?v1*Math.PI/180:-Math.PI/2;
+      ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=8; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+      ctx.fillStyle='#10b981'; ctx.beginPath(); ctx.arc(cx+Math.cos(tAng)*r,cy+Math.sin(tAng)*r,12,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#1e293b'; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(ang)*r,cy+Math.sin(ang)*r); ctx.stroke();
+    } else if (g===2) {
+      if (st==='run') { v2+=2.3*dir; if(v2>140||v2<15)dir*=-1; }
+      ctx.strokeStyle='rgba(16,185,129,.35)'; ctx.lineWidth=18; ctx.beginPath(); ctx.arc(cx,cy,v1,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle='#2563eb'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(cx,cy,v2,0,Math.PI*2); ctx.stroke();
+    } else if (g===4||g===8) {
+      if (st==='run') { v1+=0.022*dir; if(v1>1||v1<0)dir*=-1; }
+      ctx.fillStyle='#cbd5e1'; ctx.fillRect(30,cy-10,W-60,20); ctx.fillStyle='#10b981'; ctx.fillRect(cx-18,cy-14,36,28);
+      ctx.fillStyle='#ef4444'; ctx.fillRect(30+v1*(W-60)-4,cy-22,8,44);
+    } else if (g===6) {
+      const rdy=st==='run'&&performance.now()>=t0; if(rdy&&mBtn.innerText.includes('ЖДИ'))setBtn('ЖМИ СЕЙЧАС!','win');
+      ctx.fillStyle=rdy?'#10b981':'#ef4444'; ctx.beginPath(); ctx.arc(cx,cy,75,0,Math.PI*2); ctx.fill();
+    } else if (g===15) {
+      const s=st==='run'?(performance.now()-t0)/1000:0; ctx.fillStyle='#1e3a8a'; ctx.font='900 44px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(st==='run'&&s>1.2?'?.?? с':s.toFixed(2)+' с',cx,cy);
+    } else if (g===16) {
+      if (st==='run') { v1-=1.8; if(v1<10)v1=135; }
+      ctx.strokeStyle='rgba(37,99,235,.3)'; ctx.lineWidth=18; ctx.beginPath(); ctx.arc(cx,cy,45,0,Math.PI*2); ctx.stroke();
+      ctx.strokeStyle='#ef4444'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(cx,cy,v1,0,Math.PI*2); ctx.stroke();
+    }
+    raf = requestAnimationFrame(loop);
+  }
+</script>
+</body>
+</html>
