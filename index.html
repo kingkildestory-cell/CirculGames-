@@ -437,3 +437,137 @@
 </script>
 </body>
 </html>
+  window.launchGame = (mode) => {
+    curMode = mode; gState = 'idle'; cancelAnimationFrame(raf);
+    ov.style.display = 'flex'; renderStakes();
+    ovBtn.className = 'act-btn'; ovBtn.innerText = 'ЗАПУСТИТЬ (💎 ' + stake + ')';
+    const names = { pvp:'PvP Дуэль Транспортира', cases:'Футляр Архитектора', crash:'Полет Грифеля', risk:'Risk Bar Угла', mines:'Чернильные Кляксы', upgrade:'Калибровка Циркуля', slots:'Чертежный Барабан', lucky:'Колесо Радиусов', avalanche:'Спираль Спуска' };
+    document.getElementById('ov-title').innerText = names[mode] || 'Мастерская';
+    setupMode();
+  };
+
+  function setupMode() {
+    if (curMode === 'crash' || curMode === 'risk' || curMode === 'pvp' || curMode === 'avalanche') {
+      ovBody.innerHTML = `<canvas id="g-cvs" width="320" height="270" style="background:#0f172a;background-image:linear-gradient(to right,rgba(56,189,248,.12) 1px,transparent 1px),linear-gradient(to bottom,rgba(56,189,248,.12) 1px,transparent 1px);background-size:20px 20px;border-radius:18px;border:1.5px solid #38bdf8"></canvas><div id="g-info" style="margin-top:12px;font-size:14px;font-weight:800;color:#94a3b8">Нажми кнопку внизу, чтобы запустить циркуль</div>`;
+      drawIdlePreview();
+    } else if (curMode === 'mines') {
+      ovBody.innerHTML = `<div class="mine-grid" id="m-grid"></div><div id="g-info" style="margin-top:14px;font-size:14px;font-weight:800;color:#38bdf8">Открывай клетки чертежа, избегай клякс</div>`;
+      const mg = document.getElementById('m-grid');
+      for (let i = 0; i < 16; i++) mg.innerHTML += `<button type="button" class="m-cell" onclick="clickMine(${i},this)">📐</button>`;
+    } else if (curMode === 'slots') {
+      ovBody.innerHTML = `<div style="display:flex;gap:14px;font-size:48px;background:#0f172a;padding:24px;border-radius:20px;border:2px solid #38bdf8"><span id="sl1">🧭</span><span id="sl2">📐</span><span id="sl3">📏</span></div><div id="g-info" style="margin-top:14px;font-size:14px;font-weight:800;color:#94a3b8">Собери 2 или 3 одинаковых инструмента!</div>`;
+    } else if (curMode === 'upgrade') {
+      ovBody.innerHTML = `<div id="upg-ico" style="font-size:74px;transition:transform .4s">🧭</div><div id="g-info" style="margin-top:14px;font-size:15px;font-weight:800;color:#38bdf8">Точность калибровки: 45% → Награда x2.2</div>`;
+    } else {
+      ovBody.innerHTML = `<div id="c-box" style="font-size:80px;transition:transform .35s">🧰</div><div id="g-info" style="margin-top:16px;font-size:15px;font-weight:800;color:#e2e8f0">Открой футляр или крути колесо!</div>`;
+    }
+  }
+  function drawCompassLegs(ctx, px, py, tx, ty) {
+    const hx = (px + tx) / 2 - 12, hy = (py + ty) / 2 - 52;
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(px, py); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(tx, ty); ctx.stroke();
+    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f43f5e'; ctx.beginPath(); ctx.arc(tx, ty, 5, 0, Math.PI * 2); ctx.fill();
+  }
+  function drawIdlePreview() {
+    const c = document.getElementById('g-cvs'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height;
+    ctx.clearRect(0,0,W,H); ctx.strokeStyle = 'rgba(56,189,248,.25)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(W/2, H/2, 85, 0, Math.PI*2); ctx.stroke();
+    drawCompassLegs(ctx, W/2, H/2, W/2 + 85, H/2);
+  }
+  window.clickMine = (idx, el) => {
+    if (gState !== 'run' || el.innerText !== '📐') return;
+    if (mines.includes(idx)) {
+      el.style.background = '#ef4444'; el.innerText = '💧';
+      document.getElementById('g-info').innerText = 'Чернильная клякса испортила лист!';
+      finishRound(0, false, 'КЛЯКСА');
+    } else {
+      el.style.background = '#10b981'; el.innerText = '💎'; opened++;
+      val = +(1 + opened * 0.35).toFixed(2);
+      ovBtn.className = 'act-btn win'; ovBtn.innerText = 'ЗАБРАТЬ 💎 ' + Math.round(stake * val);
+      document.getElementById('g-info').innerText = 'Точность чертежа: x' + val;
+    }
+  };
+  ovBtn.onclick = () => {
+    if (gState === 'idle') {
+      if (mpMode !== '1v1' && state.bal < stake) return alert('Не хватает 💎 очков!');
+      if (mpMode !== '1v1') { state.bal -= stake; saveState(); }
+      gState = 'run';
+      if (curMode === 'crash' || curMode === 'avalanche') {
+        val = 1.0; lim = +(1.25 + Math.random() * 3.8).toFixed(2);
+        ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ЗАФИКСИРОВАТЬ (x1.00)'; loopCanvas();
+      } else if (curMode === 'risk' || curMode === 'pvp') {
+        val = 0; lim = Math.floor(35 + Math.random() * 290);
+        ovBtn.className = 'act-btn stop'; ovBtn.innerText = 'ОСТАНОВИТЬ ЦИРКУЛЬ!'; loopCanvas();
+      } else if (curMode === 'mines') {
+        setupMode(); opened = 0; val = 1.0;
+        mines = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'.split(',').map(Number).sort(()=>Math.random()-0.5).slice(0,3);
+        ovBtn.className = 'act-btn win'; ovBtn.innerText = 'ОТКРЫВАЙ КЛЕТКИ';
+      } else if (curMode === 'slots') {
+        const ic = '🧭,📐,📏,💎,🖊️'.split(',');
+        const a = ic.at(Math.floor(Math.random()*5)), b = ic.at(Math.floor(Math.random()*5)), c = ic.at(Math.floor(Math.random()*5));
+        document.getElementById('sl1').innerText = a; document.getElementById('sl2').innerText = b; document.getElementById('sl3').innerText = c;
+        if (a===b && b===c) { const w = stake*5; document.getElementById('g-info').innerText = 'ИДЕАЛЬНАЯ ЛИНИЯ! +' + w + ' 💎'; finishRound(w, true, '+'+w+' 💎'); }
+        else if (a===b || b===c || a===c) { const w = Math.round(stake*1.7); document.getElementById('g-info').innerText = 'Совпадение пары! +' + w + ' 💎'; finishRound(w, true, '+'+w+' 💎'); }
+        else { document.getElementById('g-info').innerText = 'Инструменты не совпали!'; finishRound(0, false, 'МИМО'); }
+      } else if (curMode === 'upgrade') {
+        const uIco = document.getElementById('upg-ico'); uIco.style.transform = 'rotate(360deg) scale(1.2)';
+        setTimeout(() => {
+          uIco.style.transform = 'none';
+          if (Math.random() < 0.45) { const w = Math.round(stake*2.2); document.getElementById('g-info').innerText = 'Калибровка идеальна! +' + w + ' 💎'; finishRound(w, true, 'УСПЕХ +' + w); }
+          else { document.getElementById('g-info').innerText = 'Сбился радиус! Попробуй снова.'; finishRound(0, false, 'СБОЙ'); }
+        }, 350);
+      } else {
+        const box = document.getElementById('c-box'); box.style.transform = 'scale(1.25) rotate(12deg)';
+        setTimeout(() => {
+          box.style.transform = 'scale(1)';
+          const m = '0,0.5,1.5,2,3,5'.split(',').map(Number).at(Math.floor(Math.random()*6));
+          const w = Math.round(stake * m);
+          document.getElementById('g-info').innerText = 'Сектор транспортира x' + m + ' (+' + w + ' 💎)!';
+          finishRound(w, w >= stake, w > 0 ? '+'+w+' 💎' : 'ПУСТО');
+        }, 320);
+      }
+    } else if (gState === 'run') {
+      cancelAnimationFrame(raf);
+      if (curMode === 'crash' || curMode === 'avalanche') {
+        const w = Math.round(stake * val); document.getElementById('g-info').innerText = 'Дуга зафиксирована на x' + val.toFixed(2);
+        finishRound(w, true, 'УСПЕЛ +' + w + ' 💎');
+      } else if (curMode === 'mines' && opened > 0) {
+        const w = Math.round(stake * val); finishRound(w, true, 'ЗАБРАНО +' + w + ' 💎');
+      } else if (curMode === 'risk' || curMode === 'pvp') {
+        const deg = Math.round(((val * 180 / Math.PI) % 360 + 360) % 360);
+        const diff = Math.min(Math.abs(deg - lim), 360 - Math.abs(deg - lim));
+        if (diff <= 28) { const w = Math.round(stake * 2.5); document.getElementById('g-info').innerText = 'Точно! Угол ' + deg + '° (цель ' + lim + '°)'; finishRound(w, true, 'ПОБЕДА +' + w + ' 💎'); }
+        else { document.getElementById('g-info').innerText = 'Промах: ' + deg + '° вместо ' + lim + '°'; finishRound(0, false, 'МИМО'); }
+      }
+    }
+  };
+
+  function loopCanvas() {
+    const c = document.getElementById('g-cvs'); if (!c) return;
+    const ctx = c.getContext('2d'), W = c.width, H = c.height; ctx.clearRect(0,0,W,H);
+    if (curMode === 'crash' || curMode === 'avalanche') {
+      val += 0.016 + val * 0.004; ovBtn.innerText = 'ЗАФИКСИРОВАТЬ (💎 ' + Math.round(stake * val) + ')';
+      const p = Math.min(1, (val - 1) / 4), tx = 25 + p * (W - 55);
+      const ty = curMode === 'crash' ? (H - 30 - p * (H - 70)) : (35 + p * (H - 70));
+      ctx.strokeStyle = curMode === 'avalanche' ? '#ec4899' : '#38bdf8'; ctx.lineWidth = 4; ctx.beginPath();
+      if (curMode === 'crash') { ctx.moveTo(25, H-30); ctx.quadraticCurveTo(W*0.5, H-30, tx, ty); }
+      else { ctx.moveTo(25, 35); ctx.quadraticCurveTo(W*0.5, 35, tx, ty); }
+      ctx.stroke(); drawCompassLegs(ctx, tx - 20, ty + 25, tx, ty);
+      ctx.fillStyle = '#fff'; ctx.font = '900 38px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('x' + val.toFixed(2), W/2, 52);
+      if (val >= lim) { document.getElementById('g-info').innerText = 'Грифель сломался на x' + lim; finishRound(0, false, 'ПОЛОМКА'); return; }
+    } else {
+      val += 0.08; const r = 90, cx = W/2, cy = H/2, tRad = lim * Math.PI / 180;
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = '#10b981'; ctx.lineWidth = 16; ctx.beginPath(); ctx.arc(cx, cy, r, tRad - 0.35, tRad + 0.35); ctx.stroke();
+      drawCompassLegs(ctx, cx, cy, cx + Math.cos(val) * r, cy + Math.sin(val) * r);
+      ctx.fillStyle = '#38bdf8'; ctx.font = '800 14px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Цель: ' + lim + '°', cx, 24);
+    }
+    if (gState === 'run') raf = requestAnimationFrame(loopCanvas);
+  }
+  renderTab();
+</script>
+</body>
+</html>
