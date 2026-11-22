@@ -371,3 +371,76 @@
 </script>
 </body>
 </html>
+<script>
+(function(){
+  const sc = document.getElementById('main-scroll');
+  if (sc) Array.from(sc.childNodes).forEach(n => { if (n.nodeType === 3) n.remove(); });
+
+  const mCtx = document.getElementById('mascot').getContext('2d');
+  mCtx.fillStyle='#1d4ed8'; mCtx.fillRect(6,7,20,17); mCtx.fillRect(4,11,24,11);
+  mCtx.fillStyle='#94a3b8'; mCtx.fillRect(19,2,6,2); mCtx.fillRect(18,4,2,4); mCtx.fillRect(24,4,2,4);
+  mCtx.fillStyle='#fed7aa'; mCtx.fillRect(9,10,14,12);
+  mCtx.fillStyle='#2563eb'; mCtx.fillRect(8,7,16,5);
+  mCtx.fillStyle='#0284c7'; mCtx.fillRect(9,23,14,9);
+  mCtx.fillStyle='#0f172a'; mCtx.fillRect(11,14,3,4); mCtx.fillRect(18,14,3,4);
+  mCtx.fillStyle='#f43f5e'; mCtx.fillRect(14,19,4,2);
+
+  let st = JSON.parse(localStorage.getItem('circul_blue_v1') || 'null') || { bal: 1500, games: 0, wins: 0, inv: '' };
+  let stake = 50, mpMode = 'solo', curP = 1, p1S = 0, p2S = 0, roomCode = '', curTab = 'games';
+  function saveSt() {
+    localStorage.setItem('circul_blue_v1', JSON.stringify(st));
+    document.getElementById('bal').innerText = Math.floor(st.bal);
+    document.getElementById('ov-bal').innerText = Math.floor(st.bal);
+  }
+  saveSt();
+
+  function updMp() {
+    const el = document.getElementById('mp-lbl');
+    if (mpMode === 'solo') el.innerText = 'Соло';
+    else if (mpMode === '1v1') el.innerText = '1v1 ('+p1S+':'+p2S+') Ход И'+curP;
+    else el.innerText = 'Комната '+roomCode;
+  }
+  document.getElementById('btn-1v1').onclick = () => { mpMode = mpMode==='1v1'?'solo':'1v1'; curP=1; p1S=0; p2S=0; updMp(); };
+  document.getElementById('btn-room').onclick = () => {
+    const c = prompt('Код комнаты:', roomCode); if (c === null) return;
+    roomCode = c.trim().toUpperCase() || Math.random().toString(36).substring(2,6).toUpperCase();
+    mpMode = 'room'; updMp(); alert('Комната ' + roomCode + ' создана!');
+  };
+
+  document.querySelectorAll('.nav-it').forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll('.nav-it').forEach(x => x.classList.remove('act'));
+      b.classList.add('act'); curTab = b.dataset.tab; renderTab();
+    };
+  });
+
+  function renderTab() {
+    if (curTab === 'games') {
+      sc.innerHTML = `<div class="hero-pvp" onclick="launchGame('pvp')"><div><h2>PvP Дуэль Циркуля</h2><p>Засеки точный градус</p><button type="button" class="cyan-btn">В бой</button></div><div style="font-size:52px">🧭</div></div>
+      <div class="cards-grid">
+        <div class="g-card" onclick="launchGame('crash')"><span class="g-badge">x50</span><div class="g-ico">🚀</div><div><div class="g-t">Взлет Грифеля</div><div class="g-d">Зафиксируй дугу</div></div></div>
+        <div class="g-card" onclick="launchGame('orbit')"><span class="g-badge">360°</span><div class="g-ico">🪐</div><div><div class="g-t">Орбита Иглы</div><div class="g-d">Попади в синий сектор</div></div></div>
+        <div class="g-card" onclick="launchGame('radius')"><span class="g-badge">PRO</span><div class="g-ico">⭕</div><div><div class="g-t">Точный Радиус</div><div class="g-d">Останови круг в контуре</div></div></div>
+        <div class="g-card" onclick="launchGame('mines')"><span class="g-badge">4x4</span><div class="g-ico">💧</div><div><div class="g-t">Сетка Чернил</div><div class="g-d">Обходи кляксы</div></div></div>
+        <div class="g-card" onclick="launchGame('calib')"><span class="g-badge">x2.2</span><div class="g-ico">📐</div><div><div class="g-t">Калибровка</div><div class="g-d">Улучши инструмент</div></div></div>
+        <div class="g-card" onclick="launchGame('drum')"><span class="g-badge">3x3</span><div class="g-ico">⚙️</div><div><div class="g-t">Шестерни Удачи</div><div class="g-d">Три знака в ряд</div></div></div>
+        <div class="g-card" onclick="launchGame('radar')"><span class="g-badge">NEW</span><div class="g-ico">📡</div><div><div class="g-t">Сонар Дуги</div><div class="g-d">Поймай резонанс</div></div></div>
+        <div class="g-card" onclick="launchGame('case')"><span class="g-badge">GIFT</span><div class="g-ico">🧰</div><div><div class="g-t">Футляр Мастера</div><div class="g-d">Кейс с подарками</div></div></div>
+      </div>`;
+    } else if (curTab === 'shop') {
+      const gifts = '🧸|Мишка|300,❤️|Сердце|500,💍|Кольцо|1200,🎁|Подарок|800,🎂|Тортик|1000'.split(',');
+      sc.innerHTML = `<b style="font-size:17px">Магазин подарков</b><div class="cards-grid">` + gifts.map(r => {
+        const p = r.split('|');
+        return `<div class="g-card" style="text-align:center;align-items:center"><div class="g-ico" style="font-size:44px">${p.at(0)}</div><div class="g-t">${p.at(1)}</div><button type="button" class="cyan-btn" style="width:100%;margin-top:8px" onclick="buyGift('${p.at(0)}','${p.at(1)}',${p.at(2)})">💎 ${p.at(2)}</button></div>`;
+      }).join('') + `</div>`;
+    } else if (curTab === 'prof') {
+      const invList = st.inv ? st.inv.split(',').filter(Boolean).join(' · ') : 'Пусто';
+      sc.innerHTML = `<div class="blue-pass"><div style="font-size:12px">Circul Blue Pass</div><div style="font-size:30px;font-weight:900;margin:8px 0">💎 ${Math.floor(st.bal)}</div><button type="button" class="cyan-btn" onclick="st.bal+=300;saveSt();renderTab()">+300 💎 Бонус</button></div><div class="sec-box"><b>Мои подарки:</b><div style="margin-top:6px;font-size:13px;color:#bae6fd">${invList}</div></div>`;
+    } else {
+      sc.innerHTML = `<div class="sec-box" style="text-align:center"><h3>Раздел в разработке</h3><p style="font-size:12px;color:#93c5fd;margin-top:6px">Играй в режимы во вкладке «Игры» и копи подарки!</p></div>`;
+    }
+  }
+  window.buyGift = (i, n, c) => { if (st.bal < c) return alert('Мало 💎!'); st.bal -= c; st.inv += (st.inv?',':'')+i+' '+n; saveSt(); renderTab(); alert('Куплено: '+i+' '+n); };
+  renderTab();
+})();
+</script>
