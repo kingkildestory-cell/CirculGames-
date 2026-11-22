@@ -621,3 +621,166 @@
 </script>
 </body>
 </html>
+<style>
+  @keyframes spinRune { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+  @keyframes pulseAura { 0%,100%{box-shadow:0 0 14px rgba(56,189,248,.35)} 50%{box-shadow:0 0 28px rgba(0,245,212,.75)} }
+  .anime-ring{animation:spinRune 12s linear infinite;transform-origin:center}
+  .nft-card{background:linear-gradient(155deg,#111c38,#090f21);border:1.5px solid #38bdf8;border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;animation:pulseAura 3s infinite}
+  .nft-rar{position:absolute;top:7px;right:7px;font-size:9px;font-weight:900;padding:2px 6px;border-radius:6px;background:rgba(56,189,248,.2);color:#7dd3fc}
+  .nft-rar.leg{background:rgba(245,158,11,.25);color:#fcd34d;border:1px solid #f59e0b}
+  .nft-rar.ep{background:rgba(217,70,239,.25);color:#f0abfc;border:1px solid #d946ef}
+</style>
+<script>
+(function(){
+  // Полная база 24 коллекционных NFT подарков Telegram
+  window.TG_NFTS = [
+    {id:'candle', ico:'🕯️', name:'B-Day Candle', price:150, rar:'Common'},
+    {id:'cake', ico:'🎂', name:'Homemade Cake', price:250, rar:'Common'},
+    {id:'lolpop', ico:'🍭', name:'Lol Pop', price:300, rar:'Common'},
+    {id:'cal', ico:'📅', name:'Desk Calendar', price:350, rar:'Common'},
+    {id:'bunny', ico:'🐰', name:'Jelly Bunny', price:450, rar:'Common'},
+    {id:'cigar', ico:'🚬', name:'Vintage Cigar', price:650, rar:'Rare'},
+    {id:'hex', ico:'⚗️', name:'Hex Pot', price:750, rar:'Rare'},
+    {id:'hat', ico:'🧙', name:'Witch Hat', price:850, rar:'Rare'},
+    {id:'wine', ico:'🍷', name:'Spiced Wine', price:950, rar:'Rare'},
+    {id:'pad', ico:'📔', name:'Star Notepad', price:1100, rar:'Rare'},
+    {id:'ball', ico:'🔮', name:'Crystal Ball', price:1300, rar:'Rare'},
+    {id:'rose', ico:'🌹', name:'Eternal Rose', price:1600, rar:'Epic'},
+    {id:'lovepot', ico:'🧪', name:'Love Potion', price:1900, rar:'Epic'},
+    {id:'magpot', ico:'🏺', name:'Magic Potion', price:2200, rar:'Epic'},
+    {id:'eye', ico:'🧿', name:'Evil Eye', price:2500, rar:'Epic'},
+    {id:'voodoo', ico:'🧸', name:'Voodo Doll', price:2900, rar:'Epic'},
+    {id:'skull', ico:'💀', name:'Skull Flower', price:3400, rar:'Epic'},
+    {id:'perfume', ico:'🧴', name:'Perfume Bottle', price:4500, rar:'Legendary'},
+    {id:'cat', ico:'🐈‍⬛', name:'Scared Cat', price:5500, rar:'Legendary'},
+    {id:'shard', ico:'💠', name:'Astral Shard', price:7000, rar:'Legendary'},
+    {id:'ion', ico:'💎', name:'Ion Gem', price:9000, rar:'Legendary'},
+    {id:'peach', ico:'🍑', name:'Precious Peach', price:12000, rar:'Legendary'},
+    {id:'cap', ico:'🧢', name:"Durov's Cap", price:18000, rar:'Legendary'},
+    {id:'pepe', ico:'🐸', name:'Plush Pepe', price:25000, rar:'Legendary'}
+  ];
+
+  // Генератор аниме-эмблемы циркуля (SVG)
+  window.getAnimeCompassSVG = (size=56) => `
+    <svg width="${size}" height="${size}" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#818cf8"/></linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="44" fill="none" stroke="url(#cg)" stroke-width="2" stroke-dasharray="8 5" class="anime-ring"/>
+      <circle cx="50" cy="50" r="34" fill="rgba(14,165,233,0.12)" stroke="#00f5d4" stroke-width="1.5"/>
+      <polygon points="50,10 56,24 44,24" fill="#00f5d4"/>
+      <line x1="50" y1="22" x2="26" y2="84" stroke="#e0f2fe" stroke-width="5" stroke-linecap="round"/>
+      <line x1="50" y1="22" x2="74" y2="84" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+      <path d="M 32 62 Q 50 72 68 62" fill="none" stroke="#00f5d4" stroke-width="3"/>
+      <circle cx="50" cy="24" r="7" fill="#1d4ed8" stroke="#7dd3fc" stroke-width="2"/>
+    </svg>`;
+
+  // Подбор случайного NFT по стоимости выигрыша
+  window.grantNftByValue = (val) => {
+    const eligible = window.TG_NFTS.filter(n => n.price <= val * 1.15);
+    if (!eligible.length) return null;
+    const won = eligible[eligible.length - 1];
+    let st = JSON.parse(localStorage.getItem('circul_epic_v1') || '{}');
+    const entry = won.ico + '|' + won.name + '|' + won.price;
+    st.inv = st.inv ? (st.inv + ',' + entry) : entry;
+    localStorage.setItem('circul_epic_v1', JSON.stringify(st));
+    return won;
+  };
+  // Подменяем стандартные иконки на аниме-эмблему циркуля
+  const origRender = window.renderTab;
+  window.renderTab = function() {
+    origRender();
+    const view = document.getElementById('view');
+    if (!view) return;
+
+    // Вставляем аниме-циркуль на главный экран вместо обычных смайликов
+    const banners = view.querySelectorAll('.banner-rocket div:last-child, .banner-hub div:last-child');
+    if (banners.length) {
+      banners.forEach((el, i) => { el.innerHTML = window.getAnimeCompassSVG(i === 0 ? 64 : 54); });
+    }
+
+    // Расширяем вкладку Рюкзак полным каталогом из 24 NFT Telegram
+    const bagBtn = document.querySelector('.n-btn[data-t="bag"]');
+    if (bagBtn && bagBtn.classList.contains('act')) {
+      let st = JSON.parse(localStorage.getItem('circul_epic_v1') || '{"bal":1500,"inv":""}');
+      const myItems = st.inv ? st.inv.split(',').filter(Boolean) : [];
+      view.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b style="font-size:16px">🎒 Мой Рюкзак (${myItems.length})</b>
+          <span style="font-size:11px;color:#00f5d4">Нажми, чтобы продать</span>
+        </div>
+        <div class="grid-2">` + (myItems.length ? myItems.map((raw, idx) => {
+          const p = raw.split('|'), sellPrice = Math.floor(Number(p[2] || 150) * 0.85);
+          return `<div class="nft-card" onclick="sellNft(${idx}, ${sellPrice})">
+            <div style="font-size:38px;margin:4px 0">${p[0]}</div>
+            <b style="font-size:12px">${p[1]}</b>
+            <span style="font-size:10px;color:#38bdf8;margin-top:4px">Продать: 💎 ${sellPrice}</span>
+          </div>`;
+        }).join('') : '<div style="grid-column:span 2;color:#94a3b8;font-size:12px">Рюкзак пуст — выбей NFT в играх или купи ниже!</div>') + `</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <b style="font-size:16px">🏛️ Маркет NFT Telegram (24)</b>
+          <span style="font-size:11px;color:#38bdf8">Все коллекции</span>
+        </div>
+        <div class="grid-2">` + window.TG_NFTS.map(n => {
+          const rCls = n.rar === 'Legendary' ? 'leg' : (n.rar === 'Epic' ? 'ep' : '');
+          return `<div class="nft-card">
+            <span class="nft-rar ${rCls}">${n.rar}</span>
+            <div style="font-size:40px;margin:6px 0">${n.ico}</div>
+            <b style="font-size:12px">${n.name}</b>
+            <button type="button" class="chip act" style="width:100%;margin-top:8px" onclick="buyGift('${n.ico}','${n.name.replace(/'/g, "")}',${n.price})">💎 ${n.price}</button>
+          </div>`;
+        }).join('') + `</div>`;
+    }
+  };
+
+  window.sellNft = (idx, price) => {
+    let st = JSON.parse(localStorage.getItem('circul_epic_v1') || '{"bal":1500,"inv":""}');
+    const arr = st.inv ? st.inv.split(',').filter(Boolean) : [];
+    if (!arr[idx]) return;
+    const name = arr[idx].split('|')[1];
+    if (!confirm('Продать ' + name + ' за ' + price + ' 💎?')) return;
+    arr.splice(idx, 1);
+    st.inv = arr.join(',');
+    st.bal = (st.bal || 0) + price;
+    localStorage.setItem('circul_epic_v1', JSON.stringify(st));
+    document.getElementById('bal').innerText = Math.floor(st.bal);
+    document.getElementById('m-bal').innerText = Math.floor(st.bal);
+    window.renderTab();
+  };
+
+  // Улучшаем Upgrade: выбор конкретного NFT из рюкзака и аниме-руны циркуля
+  const origOpen = window.openGame;
+  window.openGame = function(g) {
+    origOpen(g);
+    if (g === 'upgrade') {
+      let st = JSON.parse(localStorage.getItem('circul_epic_v1') || '{"bal":1500,"inv":""}');
+      const myItems = st.inv ? st.inv.split(',').filter(Boolean) : [];
+      const mBody = document.getElementById('m-body');
+      if (myItems.length && mBody) {
+        const nftBar = document.createElement('div');
+        nftBar.className = 'panel';
+        nftBar.innerHTML = `<div style="font-size:11px;color:#38bdf8;font-weight:800">Выбрать NFT из рюкзака для ставки:</div>
+          <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">` +
+          myItems.map((raw, i) => {
+            const p = raw.split('|');
+            return `<button type="button" class="chip" onclick="stake=${p[2]};openGame('upgrade')">${p[0]} ${p[1]} (${p[2]}💎)</button>`;
+          }).join('') + `</div>`;
+        mBody.insertBefore(nftBar, mBody.children[1]);
+      }
+    }
+  };
+
+  // Аниме-аура и авто-выдача NFT при крупных выигрышах (от 150 💎)
+  const origAlert = window.alert;
+  window.alert = function(msg) {
+    const m = String(msg).match(/\+(\d+)\s*💎/);
+    if (m && Number(m[1]) >= 150) {
+      const nft = window.grantNftByValue(Number(m[1]));
+      if (nft) msg += '\n\n🎁 БОНУС! В рюкзак выпал NFT: ' + nft.ico + ' ' + nft.name + ' (' + nft.rar + ')!';
+    }
+    origAlert(msg);
+  };
+
+  window.renderTab();
+})();
+</script>
